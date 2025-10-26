@@ -34,9 +34,9 @@ cask "visual-studio-code-linux" do
     # Capture the user's login/interactive shell PATH so desktop-launched apps
     # (launched by the DE) inherit the same PATH the user has in their shell.
     # Fall back to the current process PATH if capturing fails.
-    shell = ENV['SHELL'] || '/bin/bash'
+    shell = ENV["SHELL"] || "/bin/bash"
     user_path = `#{shell} -lc 'printf "%s" "$PATH"'`.to_s.strip
-    user_path = ENV['PATH'] if user_path.empty?
+    user_path = ENV.fetch("PATH", nil) if user_path.empty?
     # Escape double quotes so the PATH can be embedded safely in the .desktop Exec
     user_path_escaped = user_path.gsub('"', '\\"')
 
@@ -76,7 +76,7 @@ cask "visual-studio-code-linux" do
     EOS
   end
 
-	# ! NO zapping !
+  # ! NO zapping !
   # zap trash: [
   #   "~/.config/Code",
   #   "~/.vscode",

@@ -13,17 +13,18 @@ cask "zed-linux" do
 
   # Zed publishes .desktop inside the tarball, but we generate one to match our bin path
   binary "zed.app/bin/zed"
-
   artifact "zed.app/share/icons/hicolor/512x512/apps/zed.png",
            target: "#{Dir.home}/.local/share/icons/zed.png"
+  artifact "zed.desktop",
+           target: "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
     # Capture the user's login/interactive shell PATH so desktop-launched apps
     # inherit the same PATH the user has in their shell.
-    shell = ENV['SHELL'] || '/bin/bash'
+    shell = ENV["SHELL"] || "/bin/bash"
     user_path = `#{shell} -lc 'printf "%s" "$PATH"'`.to_s.strip
-    user_path = ENV['PATH'] if user_path.empty?
+    user_path = ENV.fetch("PATH", nil) if user_path.empty?
     # Escape double quotes so the PATH can be embedded safely in the .desktop Exec
     user_path_escaped = user_path.gsub('"', '\\"')
     File.write("#{staged_path}/zed.desktop", <<~EOS)
@@ -41,9 +42,6 @@ cask "zed-linux" do
       Terminal=false
     EOS
   end
-
-  artifact "zed.desktop",
-           target: "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
 
   # ! NO zapping !
   # zap trash: [
