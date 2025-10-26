@@ -42,7 +42,7 @@ cask "visual-studio-code-insiders-linux" do
       Name=Visual Studio Code - Insiders
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code-insiders %F
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code-insiders %F
       Icon=#{Dir.home}/.local/share/icons/vscode-insiders.png
       Type=Application
       StartupNotify=false
@@ -54,7 +54,7 @@ cask "visual-studio-code-insiders-linux" do
 
       [Desktop Action open-code-insiders]
       Name=Open Code Insiders
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code-insiders %F
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code-insiders %F
       Icon=#{Dir.home}/.local/share/icons/vscode-insiders.png
     EOS
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-insiders-url-handler.desktop", <<~EOS)
@@ -62,7 +62,7 @@ cask "visual-studio-code-insiders-linux" do
       Name=Visual Studio Code Insiders - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code-insiders --open-url %U
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code-insiders --open-url %U
       Icon=#{Dir.home}/.local/share/icons/vscode-insiders.png
       Type=Application
       NoDisplay=true

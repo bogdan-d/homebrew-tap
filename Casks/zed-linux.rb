@@ -32,7 +32,7 @@ cask "zed-linux" do
       Name=Zed
       Comment=High-performance, multiplayer code editor
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/zed %F
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/zed %F
       Icon=#{Dir.home}/.local/share/icons/zed.png
       Type=Application
       StartupNotify=true

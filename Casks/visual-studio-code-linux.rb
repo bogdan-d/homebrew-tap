@@ -45,7 +45,7 @@ cask "visual-studio-code-linux" do
       Name=Visual Studio Code
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code %F
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
       Type=Application
       StartupNotify=false
@@ -57,7 +57,7 @@ cask "visual-studio-code-linux" do
 
       [Desktop Action open-code]
       Name=Open VSCode
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code %F
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
     EOS
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-url-handler.desktop", <<~EOS)
@@ -65,7 +65,7 @@ cask "visual-studio-code-linux" do
       Name=Visual Studio Code - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code --open-url %U
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code --open-url %U
       Icon=#{Dir.home}/.local/share/icons/vscode.png
       Type=Application
       NoDisplay=true

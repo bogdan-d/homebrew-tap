@@ -44,7 +44,7 @@ cask "vscodium-linux" do
   Name=VSCodium
   Comment=Code Editing. Redefined.
   GenericName=Text Editor
-  Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/codium %F
+  Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
   Icon=vscodium
   Type=Application
   StartupNotify=false
@@ -56,7 +56,7 @@ cask "vscodium-linux" do
 
   [Desktop Action open-vscodium]
   Name=Open VSCodium
-  Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/codium %F
+  Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
   Icon=vscodium
     EOS
     File.write("#{staged_path}/codium-url-handler.desktop", <<~EOS)
@@ -64,7 +64,7 @@ cask "vscodium-linux" do
   Name=VSCodium - URL Handler
   Comment=Code Editing. Redefined.
   GenericName=Text Editor
-  Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/codium --open-url %U
+  Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium --open-url %U
   Icon=vscodium
   Type=Application
   NoDisplay=true
