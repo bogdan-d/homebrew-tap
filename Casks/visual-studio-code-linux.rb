@@ -2,11 +2,10 @@ cask "visual-studio-code-linux" do
   arch arm: "arm64", intel: "x64"
   os linux: "linux"
 
-  version "1.105.1"
-  sha256 arm64_linux:  "4579e52664fe2df2d80724b420abab1827d30520f0e766f7608403dba2fe94bd",
-         x86_64_linux: "32a650f1a111df00354ad9571f57d12268376777677dd5af2162ead921067a89"
+  version :latest
+  sha256 :no_check
 
-  url "https://update.code.visualstudio.com/#{version}/#{os}-#{arch}/stable"
+  url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/stable"
   name "Microsoft Visual Studio Code"
   name "VS Code"
   desc "Open-source code editor"
@@ -32,34 +31,33 @@ cask "visual-studio-code-linux" do
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
+    # Capture the user's login/interactive shell PATH so desktop-launched apps
+    # (launched by the DE) inherit the same PATH the user has in their shell.
+    # Fall back to the current process PATH if capturing fails.
+    shell = ENV['SHELL'] || '/bin/bash'
+    user_path = `#{shell} -lc 'printf "%s" "$PATH"'`.to_s.strip
+    user_path = ENV['PATH'] if user_path.empty?
+    # Escape double quotes so the PATH can be embedded safely in the .desktop Exec
+    user_path_escaped = user_path.gsub('"', '\\"')
+
     File.write("#{staged_path}/VSCode-linux-#{arch}/code.desktop", <<~EOS)
       [Desktop Entry]
       Name=Visual Studio Code
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/code %F
+      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
       Type=Application
       StartupNotify=false
       StartupWMClass=Code
       Categories=TextEditor;Development;IDE;
-      MimeType=application/x-code-workspace;
-      Actions=new-empty-window;
+      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
+      Actions=open-code;
       Keywords=vscode;
 
-      [Desktop Action new-empty-window]
-      Name=New Empty Window
-      Name[cs]=Nové prázdné okno
-      Name[de]=Neues leeres Fenster
-      Name[es]=Nueva ventana vacía
-      Name[fr]=Nouvelle fenêtre vide
-      Name[it]=Nuova finestra vuota
-      Name[ja]=新しい空のウィンドウ
-      Name[ko]=새 빈 창
-      Name[ru]=Новое пустое окно
-      Name[zh_CN]=新建空窗口
-      Name[zh_TW]=開新空視窗
-      Exec=#{HOMEBREW_PREFIX}/bin/code --new-window %F
+      [Desktop Action open-code]
+      Name=Open VSCode
+      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
     EOS
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-url-handler.desktop", <<~EOS)
@@ -67,7 +65,7 @@ cask "visual-studio-code-linux" do
       Name=Visual Studio Code - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/code --open-url %U
+      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/code --open-url %U
       Icon=#{Dir.home}/.local/share/icons/vscode.png
       Type=Application
       NoDisplay=true
@@ -78,8 +76,9 @@ cask "visual-studio-code-linux" do
     EOS
   end
 
-  zap trash: [
-    "~/.config/Code",
-    "~/.vscode",
-  ]
+	# ! NO zapping !
+  # zap trash: [
+  #   "~/.config/Code",
+  #   "~/.vscode",
+  # ]
 end

@@ -31,33 +31,32 @@ cask "vscodium-linux" do
     FileUtils.mkdir_p("#{Dir.home}/.local/share/applications")
     FileUtils.mkdir_p("#{Dir.home}/.local/share/icons")
 
+    # Capture the user's login/interactive shell PATH so desktop-launched apps
+    # inherit the same PATH the user has in their shell.
+    shell = ENV['SHELL'] || '/bin/bash'
+    user_path = `#{shell} -lc 'printf "%s" "$PATH"'`.to_s.strip
+    user_path = ENV['PATH'] if user_path.empty?
+    # Escape double quotes so the PATH can be embedded safely in the .desktop Exec
+    user_path_escaped = user_path.gsub('"', '\\"')
+
     File.write("#{staged_path}/codium.desktop", <<~EOS)
       [Desktop Entry]
       Name=VSCodium
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/codium %F
+  Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/codium %F
       Icon=vscodium
       Type=Application
       StartupNotify=false
       StartupWMClass=VSCodium
       Categories=TextEditor;Development;IDE;
-      MimeType=text/plain;inode/directory;application/x-codium-workspace;
-      Actions=new-empty-window;
+      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
+      Actions=open-vscodium;
       Keywords=vscodium;codium;vscode;
 
-      [Desktop Action new-empty-window]
-      Name=New Empty Window
-      Name[de]=Neues leeres Fenster
-      Name[es]=Nueva ventana vacía
-      Name[fr]=Nouvelle fenêtre vide
-      Name[it]=Nuova finestra vuota
-      Name[ja]=新しい空のウィンドウ
-      Name[ko]=새 빈 창
-      Name[ru]=Новое пустое окно
-      Name[zh_CN]=新建空窗口
-      Name[zh_TW]=開新空視窗
-      Exec=#{HOMEBREW_PREFIX}/bin/codium --new-window %F
+      [Desktop Action open-vscodium]
+      Name=Open VSCodium
+      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/codium %F
       Icon=vscodium
     EOS
     File.write("#{staged_path}/codium-url-handler.desktop", <<~EOS)
@@ -65,7 +64,7 @@ cask "vscodium-linux" do
       Name=VSCodium - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/codium --open-url %U
+      Exec=env PATH="#{user_path_escaped}:$PATH" #{HOMEBREW_PREFIX}/bin/codium --open-url %U
       Icon=vscodium
       Type=Application
       NoDisplay=true
@@ -76,8 +75,9 @@ cask "vscodium-linux" do
     EOS
   end
 
-  zap trash: [
-    "#{Dir.home}/.config/Codium",
-    "#{Dir.home}/.vscodium",
-  ]
+  # ! NO zapping !
+  # zap trash: [
+  #   "#{Dir.home}/.config/Codium",
+  #   "#{Dir.home}/.vscodium",
+  # ]
 end
