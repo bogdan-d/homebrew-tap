@@ -40,38 +40,38 @@ cask "vscodium-linux" do
     user_path_escaped = user_path.gsub('"', '\\"')
 
     File.write("#{staged_path}/codium.desktop", <<~EOS)
-  [Desktop Entry]
-  Name=VSCodium
-  Comment=Code Editing. Redefined.
-  GenericName=Text Editor
-  Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
-  Icon=vscodium
-  Type=Application
-  StartupNotify=false
-  StartupWMClass=VSCodium
-  Categories=TextEditor;Development;IDE;
-  MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
-  Actions=open-vscodium;
-  Keywords=vscodium;codium;vscode;
+      [Desktop Entry]
+      Name=VSCodium
+      Comment=Code Editing. Redefined.
+      GenericName=Text Editor
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
+      Icon=vscodium
+      Type=Application
+      StartupNotify=false
+      StartupWMClass=VSCodium
+      Categories=TextEditor;Development;IDE;
+      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
+      Actions=open-vscodium;
+      Keywords=vscodium;codium;vscode;
 
-  [Desktop Action open-vscodium]
-  Name=Open VSCodium
-  Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
-  Icon=vscodium
+      [Desktop Action open-vscodium]
+      Name=Open VSCodium
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
+      Icon=vscodium
     EOS
     File.write("#{staged_path}/codium-url-handler.desktop", <<~EOS)
-  [Desktop Entry]
-  Name=VSCodium - URL Handler
-  Comment=Code Editing. Redefined.
-  GenericName=Text Editor
-  Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium --open-url %U
-  Icon=vscodium
-  Type=Application
-  NoDisplay=true
-  StartupNotify=true
-  Categories=Utility;TextEditor;Development;IDE;
-  MimeType=x-scheme-handler/vscodium;
-  Keywords=vscodium;codium;vscode;
+      [Desktop Entry]
+      Name=VSCodium - URL Handler
+      Comment=Code Editing. Redefined.
+      GenericName=Text Editor
+      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium --open-url %U
+      Icon=vscodium
+      Type=Application
+      NoDisplay=true
+      StartupNotify=true
+      Categories=Utility;TextEditor;Development;IDE;
+      MimeType=x-scheme-handler/vscodium;
+      Keywords=vscodium;codium;vscode;
     EOS
   end
 
