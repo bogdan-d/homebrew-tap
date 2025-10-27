@@ -31,20 +31,12 @@ cask "vscodium-linux" do
     FileUtils.mkdir_p("#{Dir.home}/.local/share/applications")
     FileUtils.mkdir_p("#{Dir.home}/.local/share/icons")
 
-    # Capture the user's login/interactive shell PATH so desktop-launched apps
-    # inherit the same PATH the user has in their shell.
-    shell = ENV["SHELL"] || "/bin/bash"
-    user_path = `#{shell} -lc 'printf "%s" "$PATH"'`.to_s.strip
-    user_path = ENV.fetch("PATH", nil) if user_path.empty?
-    # Escape double quotes so the PATH can be embedded safely in the .desktop Exec
-    user_path_escaped = user_path.gsub('"', '\\"')
-
     File.write("#{staged_path}/codium.desktop", <<~EOS)
       [Desktop Entry]
       Name=VSCodium
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
+      Exec=#{HOMEBREW_PREFIX}/bin/codium %F
       Icon=vscodium
       Type=Application
       StartupNotify=false
@@ -56,7 +48,7 @@ cask "vscodium-linux" do
 
       [Desktop Action open-vscodium]
       Name=Open VSCodium
-      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium %F
+      Exec=#{HOMEBREW_PREFIX}/bin/codium %F
       Icon=vscodium
     EOS
     File.write("#{staged_path}/codium-url-handler.desktop", <<~EOS)
@@ -64,7 +56,7 @@ cask "vscodium-linux" do
       Name=VSCodium - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/codium --open-url %U
+      Exec=#{HOMEBREW_PREFIX}/bin/codium --open-url %U
       Icon=vscodium
       Type=Application
       NoDisplay=true

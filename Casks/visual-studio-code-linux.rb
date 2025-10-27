@@ -31,21 +31,13 @@ cask "visual-studio-code-linux" do
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    # Capture the user's login/interactive shell PATH so desktop-launched apps
-    # (launched by the DE) inherit the same PATH the user has in their shell.
-    # Fall back to the current process PATH if capturing fails.
-    shell = ENV["SHELL"] || "/bin/bash"
-    user_path = `#{shell} -lc 'printf "%s" "$PATH"'`.to_s.strip
-    user_path = ENV.fetch("PATH", nil) if user_path.empty?
-    # Escape double quotes so the PATH can be embedded safely in the .desktop Exec
-    user_path_escaped = user_path.gsub('"', '\\"')
 
     File.write("#{staged_path}/VSCode-linux-#{arch}/code.desktop", <<~EOS)
       [Desktop Entry]
       Name=Visual Studio Code
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code %F
+      Exec=#{HOMEBREW_PREFIX}/bin/code %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
       Type=Application
       StartupNotify=false
@@ -57,7 +49,7 @@ cask "visual-studio-code-linux" do
 
       [Desktop Action open-code]
       Name=Open VSCode
-      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code %F
+      Exec=#{HOMEBREW_PREFIX}/bin/code %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
     EOS
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-url-handler.desktop", <<~EOS)
@@ -65,7 +57,7 @@ cask "visual-studio-code-linux" do
       Name=Visual Studio Code - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=env PATH="#{user_path_escaped}" #{HOMEBREW_PREFIX}/bin/code --open-url %U
+      Exec=#{HOMEBREW_PREFIX}/bin/code --open-url %U
       Icon=#{Dir.home}/.local/share/icons/vscode.png
       Type=Application
       NoDisplay=true
