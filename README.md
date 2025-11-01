@@ -106,3 +106,6 @@ brew bump-cask-pr Casks/<cask-file>.rb
 Notes:
 - Rolling/preview/insiders casks often use `version :latest` and `sha256 :no_check` — check the cask source if you need strict checksums.
 - Follow existing patterns: use `arch` multi-arch declarations where applicable, `artifact` for desktop files/icons, and `preflight` blocks to rewrite Exec/Icon paths when needed (see `Casks/visual-studio-code-linux.rb`).
+## Activity
+
+![Alt](https://repobeats.axiom.co/api/embed/c4eb0b1a3a2baeb3cdb87b3a463a98e21e78eafc.svg "Repobeats analytics image")
