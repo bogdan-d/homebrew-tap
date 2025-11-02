@@ -2,7 +2,7 @@ cask "visual-studio-code-linux" do
   arch arm: "arm64", intel: "x64"
   os linux: "linux"
 
-  version :latest
+  version "1.105.1"
   sha256 :no_check
 
   url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/stable"
