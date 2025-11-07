@@ -2,7 +2,7 @@ cask "visual-studio-code-insiders-linux" do
   arch arm: "arm64", intel: "x64"
   os linux: "linux"
 
-  version :latest
+  version "1.106.0-insider"
   sha256 :no_check
 
   url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/insider"
