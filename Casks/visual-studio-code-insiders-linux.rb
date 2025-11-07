@@ -2,7 +2,7 @@ cask "visual-studio-code-insiders-linux" do
   arch arm: "arm64", intel: "x64"
   os linux: "linux"
 
-  version "1.106.0-insider"
+  version :latest
   sha256 :no_check
 
   url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/insider"
@@ -11,14 +11,17 @@ cask "visual-studio-code-insiders-linux" do
   desc "Insiders build of the VS Code editor"
   homepage "https://code.visualstudio.com/insiders/"
 
-  livecheck do
-    url "https://update.code.visualstudio.com/api/update/#{os}-#{arch}/insider/latest"
-    strategy :json do |json|
-      json["productVersion"]
-    end
-  end
+  # livecheck do
+  #   url "https://update.code.visualstudio.com/api/update/#{os}-#{arch}/insider/latest"
+  #   strategy :json do |json|
+  #     json["productVersion"]
+  #   end
+  # end
 
   binary "VSCode-linux-#{arch}/bin/code-insiders"
+  binary "VSCode-linux-#{arch}/bin/code-tunnel-insiders"
+  bash_completion "#{staged_path}/VSCode-linux-#{arch}/resources/completions/bash/code-insiders"
+  zsh_completion  "#{staged_path}/VSCode-linux-#{arch}/resources/completions/zsh/_code-insiders"
   artifact "VSCode-linux-#{arch}/code-insiders.desktop",
            target: "#{Dir.home}/.local/share/applications/code-insiders.desktop"
   artifact "VSCode-linux-#{arch}/code-insiders-url-handler.desktop",
@@ -45,7 +48,7 @@ cask "visual-studio-code-insiders-linux" do
       Keywords=vscode;insiders;
 
       [Desktop Action open-code-insiders]
-      Name=Open Code Insiders
+      Name=Open VSCode Insiders
       Exec=#{HOMEBREW_PREFIX}/bin/code-insiders %F
       Icon=#{Dir.home}/.local/share/icons/vscode-insiders.png
     EOS
