@@ -8,8 +8,7 @@ cask "antigravity-linux" do
   homepage "https://antigravity.google/"
 
   livecheck do
-    url "https://antigravity.google/"
-    regex(%r{edgedl\.me\.gvt1\.com/edgedl/release2/[^/]+/antigravity/stable/([\d.]+-\d+)/linux[._-]x64}i)
+    skip "Version information requires JavaScript rendering"
   end
 
   binary "Antigravity/bin/antigravity"
