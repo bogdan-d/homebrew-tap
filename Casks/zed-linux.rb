@@ -29,6 +29,7 @@ cask "zed-linux" do
       Icon=#{Dir.home}/.local/share/icons/zed.png
       Type=Application
       StartupNotify=true
+      StartupWMClass=dev.zed.Zed
       Categories=TextEditor;Development;IDE;
       MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;
       Keywords=zed;editor;code;ide;
