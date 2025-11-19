@@ -1,9 +1,6 @@
 cask "antigravity-linux" do
-  arch arm: "arm64", intel: "x64"
-  os linux: "linux"
-
   version "1.11.3"
-  sha256 x86_64_linux: "025da512f9799a7154e2cc75bc0908201382c1acf2e8378f9da235cb84a5615b"
+  sha256 "025da512f9799a7154e2cc75bc0908201382c1acf2e8378f9da235cb84a5615b"
 
   url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.11.3-6583016683339776/linux-x64/Antigravity.tar.gz"
   name "Google Antigravity"
