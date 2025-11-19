@@ -9,13 +9,20 @@ cask "antigravity" do
   desc "Agentic Development Platform"
   homepage "https://antigravity.google/"
 
+  livecheck do
+    url "https://antigravity.google/download/linux"
+    regex(%r{antigravity/stable/([\d.]+-\d+)/linux[._-]x64}i)
+  end
+
   binary "Antigravity/bin/antigravity"
   bash_completion "Antigravity/resources/completions/bash/antigravity"
   zsh_completion "Antigravity/resources/completions/zsh/_antigravity"
-  artifact "Antigravity/resources/app/resources/linux/code.png",
-           target: "#{Dir.home}/.local/share/icons/antigravity.png"
   artifact "Antigravity/antigravity.desktop",
            target: "#{Dir.home}/.local/share/applications/antigravity.desktop"
+  artifact "Antigravity/antigravity-url-handler.desktop",
+           target: "#{Dir.home}/.local/share/applications/antigravity-url-handler.desktop"
+  artifact "Antigravity/resources/app/resources/linux/code.png",
+           target: "#{Dir.home}/.local/share/icons/antigravity.png"
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
@@ -40,5 +47,25 @@ cask "antigravity" do
       Exec=#{HOMEBREW_PREFIX}/bin/antigravity %F
       Icon=#{Dir.home}/.local/share/icons/antigravity.png
     EOS
+    File.write("#{staged_path}/Antigravity/antigravity-url-handler.desktop", <<~EOS)
+      [Desktop Entry]
+      Name=Google Antigravity - URL Handler
+      Comment=Agentic Development Platform
+      GenericName=Text Editor
+      Exec=#{HOMEBREW_PREFIX}/bin/antigravity --open-url %U
+      Icon=#{Dir.home}/.local/share/icons/antigravity.png
+      Type=Application
+      NoDisplay=true
+      StartupNotify=true
+      Categories=Utility;TextEditor;Development;IDE;
+      MimeType=x-scheme-handler/antigravity;
+      Keywords=antigravity;
+    EOS
   end
+
+  # ! NO zapping !
+  # zap trash: [
+  #   "~/.config/Antigravity",
+  #   "~/.antigravity",
+  # ]
 end
