@@ -87,6 +87,6 @@ else
     echo "Cleaning up..."
     brew uninstall --cask "$TAP_NAME/$CASK_NAME"
     echo "Removing temporary tap..."
-    brew untap "$TAP_NAME"
+    brew untap --force --verbose "$TAP_NAME"
     echo "Cleanup complete."
 fi
