@@ -1,14 +1,37 @@
 cask "antigravity-linux" do
-  version "1.11.3"
+  version "1.11.3,6583016683339776"
   sha256 "025da512f9799a7154e2cc75bc0908201382c1acf2e8378f9da235cb84a5615b"
 
-  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.11.3-6583016683339776/linux-x64/Antigravity.tar.gz"
+  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version.csv.first}-#{version.csv.second}/linux-x64/Antigravity.tar.gz"
   name "Google Antigravity"
   desc "Agentic Development Platform"
   homepage "https://antigravity.google/"
 
   livecheck do
-    skip "Version information requires JavaScript rendering"
+    url "https://antigravity.google/"
+    regex(/pkgver=(\d+(?:\.\d+)+).*?_buildid=(\d+)/m)
+    strategy :page_match do |_page, regex|
+      # The AUR repository is sometimes unreliable, so we use curl with retries
+      aur_url = "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=google-antigravity-bin"
+      headers = [
+        "-H", "User-Agent: Homebrew/4.4.5 (Linux; x64; Ubuntu 22.04.4 LTS) curl/7.81.0",
+        "-H", "Accept: text/plain"
+      ]
+
+      # Retry 4 times with a 2 second delay
+      cmd = [
+        "curl", "--fail", "--silent", "--show-error", "--location",
+        "--retry", "4", "--retry-delay", "2", *headers, aur_url
+      ]
+
+      stdout, _, status = Open3.capture3(*cmd)
+      next if !status.success? || stdout.blank?
+
+      match = stdout.match(regex)
+      next if match.blank?
+
+      "#{match[1]},#{match[2]}"
+    end
   end
 
   binary "Antigravity/bin/antigravity"
@@ -35,7 +58,7 @@ cask "antigravity-linux" do
       StartupNotify=false
       StartupWMClass=Antigravity
       Categories=TextEditor;Development;IDE;
-      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
+      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;x-scheme-handler/antigravity;
       Actions=open-antigravity;
       Keywords=antigravity;
 
