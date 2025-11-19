@@ -5,8 +5,8 @@ echo "================"
 
 for file in Casks/*
 do
-    echo "Running style fix for cask file: $(basename "${file%.rb}")"
-    brew style --fix "Casks/$(basename "${file%.rb}")"
+    echo "Running style fix for cask file: $file"
+    brew style --fix "$file"
 done
 
 echo "Formatting complete."
