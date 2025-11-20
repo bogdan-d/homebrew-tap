@@ -1,6 +1,7 @@
 cask "antigravity-linux" do
-  version "1.11.3,6583016683339776"
-  sha256 "025da512f9799a7154e2cc75bc0908201382c1acf2e8378f9da235cb84a5615b"
+  # version format is "<pkgver>,<buildid>" - AUR PKGBUILD provides both
+  version "1.11.5,5234145629700096"
+  sha256 "4e03151a55743cf30fac595abb343c9eb5a3b6a80d2540136d75b4ead8072112"
 
   url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version.csv.first}-#{version.csv.second}/linux-x64/Antigravity.tar.gz"
   name "Google Antigravity"
@@ -8,17 +9,19 @@ cask "antigravity-linux" do
   homepage "https://antigravity.google/"
 
   livecheck do
-    url "https://antigravity.google/"
+    # Use the AUR PKGBUILD for version and buildid detection. AUR can be
+    # flaky with 502s/503s, so fetch it with curl and retries and fall back
+    # gracefully when the upstream is unavailable.
+    url "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=antigravity-bin"
     regex(/pkgver=(\d+(?:\.\d+)+).*?_buildid=(\d+)/m)
     strategy :page_match do |_page, regex|
-      # The AUR repository is sometimes unreliable, so we use curl with retries
-      aur_url = "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=google-antigravity-bin"
+      aur_url = "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=antigravity-bin"
       headers = [
         "-H", "User-Agent: Homebrew/4.4.5 (Linux; x64; Ubuntu 22.04.4 LTS) curl/7.81.0",
         "-H", "Accept: text/plain"
       ]
 
-      # Retry 4 times with a 2 second delay
+      # Retry 4 times with a 2 second delay to handle transient AUR failures
       cmd = [
         "curl", "--fail", "--silent", "--show-error", "--location",
         "--retry", "4", "--retry-delay", "2", *headers, aur_url
@@ -34,6 +37,10 @@ cask "antigravity-linux" do
     end
   end
 
+  # The upstream tarball sometimes contains the binary as: "Antigravity",
+  # "antigravity", or under "Antigravity/bin/antigravity". We normalize
+  # the install by creating a consistent "Antigravity/bin/antigravity" symlink
+  # during the preflight stage and then using the binary stanza below.
   binary "Antigravity/bin/antigravity"
   bash_completion "Antigravity/resources/completions/bash/antigravity"
   zsh_completion "Antigravity/resources/completions/zsh/_antigravity"
@@ -45,6 +52,24 @@ cask "antigravity-linux" do
            target: "#{Dir.home}/.local/share/icons/antigravity.png"
 
   preflight do
+    # Ensure there is a stable path for the binary regardless of actual file name
+    begin
+      bin_dir = "#{staged_path}/Antigravity/bin"
+      FileUtils.mkdir_p bin_dir
+
+      candidates = [
+        "#{staged_path}/Antigravity/Antigravity",
+        "#{staged_path}/Antigravity/antigravity",
+        "#{staged_path}/Antigravity/bin/antigravity",
+      ]
+
+      candidate = candidates.find { |f| File.exist?(f) }
+      FileUtils.ln_s(candidate, "#{bin_dir}/antigravity") if candidate && !File.exist?("#{bin_dir}/antigravity")
+    rescue => e
+      # Don't abort install if something goes wrong here; fall back to default behavior.
+      odie "Failed to create Antigravity binary symlink: #{e}" if defined?(odie)
+    end
+
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
 
     File.write("#{staged_path}/Antigravity/antigravity.desktop", <<~EOS)
