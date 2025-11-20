@@ -67,3 +67,14 @@ brew bump-cask-pr Casks/<cask-file>.rb
 Notes:
 - Rolling/preview/insiders casks often use `version :latest` and `sha256 :no_check` — check the cask source if you need strict checksums.
 - Follow existing patterns: use `arch` multi-arch declarations where applicable, `artifact` for desktop files/icons, and `preflight` blocks to rewrite Exec/Icon paths when needed (see `Casks/visual-studio-code-linux.rb`).
+
+## Developer scripts
+
+This repository includes a couple of helper scripts you can use while working on the
+tap:
+
+	./style.sh [cask-name|path ...]  # Run `brew style --fix` on a cask or all casks
+	./audit.sh [cask-name|path ...]  # Run `brew audit --cask` on a cask or all casks
+
+Both scripts accept either a cask name (e.g., `antigravity-linux`) or a path
+(`Casks/antigravity-linux.rb`). Use `-h` or `--help` to view help text.
