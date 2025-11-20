@@ -43,12 +43,12 @@ cask "vscodium-linux" do
       StartupWMClass=VSCodium
       Categories=TextEditor;Development;IDE;
       MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
-      Actions=open-vscodium;
+      Actions=new-empty-window;
       Keywords=vscodium;codium;vscode;
 
-      [Desktop Action open-vscodium]
-      Name=Open VSCodium
-      Exec=#{HOMEBREW_PREFIX}/bin/codium %F
+      [Desktop Action new-empty-window]
+      Name=New Empty Window
+      Exec=#{HOMEBREW_PREFIX}/bin/codium --new-window %F
       Icon=vscodium
     EOS
     File.write("#{staged_path}/codium-url-handler.desktop", <<~EOS)

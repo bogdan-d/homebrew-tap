@@ -45,12 +45,12 @@ cask "visual-studio-code-linux" do
       StartupWMClass=Code
       Categories=TextEditor;Development;IDE;
       MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
-      Actions=open-code;
+      Actions=new-empty-window;
       Keywords=vscode;
 
-      [Desktop Action open-code]
-      Name=Open VSCode
-      Exec=#{HOMEBREW_PREFIX}/bin/code %F
+      [Desktop Action new-empty-window]
+      Name=New Empty Window
+      Exec=#{HOMEBREW_PREFIX}/bin/code --new-window %F
       Icon=#{Dir.home}/.local/share/icons/vscode.png
     EOS
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-url-handler.desktop", <<~EOS)

@@ -44,12 +44,12 @@ cask "visual-studio-code-insiders-linux" do
       StartupWMClass=code-insiders
       Categories=TextEditor;Development;IDE;
       MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
-      Actions=open-code-insiders;
+      Actions=new-empty-window;
       Keywords=vscode;insiders;
 
-      [Desktop Action open-code-insiders]
-      Name=Open VSCode Insiders
-      Exec=#{HOMEBREW_PREFIX}/bin/code-insiders %F
+      [Desktop Action new-empty-window]
+      Name=New Empty Window
+      Exec=#{HOMEBREW_PREFIX}/bin/code-insiders --new-window %F
       Icon=#{Dir.home}/.local/share/icons/vscode-insiders.png
     EOS
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-insiders-url-handler.desktop", <<~EOS)

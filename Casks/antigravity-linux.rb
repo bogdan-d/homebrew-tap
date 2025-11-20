@@ -4,7 +4,7 @@ cask "antigravity-linux" do
 
   url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version.csv.first}-#{version.csv.second}/linux-x64/Antigravity.tar.gz"
   name "Google Antigravity"
-  desc "Agentic Development Platform"
+  desc "Google Antigravity - Experience liftoff"
   homepage "https://antigravity.google/"
 
   livecheck do
@@ -49,8 +49,8 @@ cask "antigravity-linux" do
 
     File.write("#{staged_path}/Antigravity/antigravity.desktop", <<~EOS)
       [Desktop Entry]
-      Name=Google Antigravity
-      Comment=Agentic Development Platform
+      Name=Antigravity
+      Comment=Experience liftoff
       GenericName=Text Editor
       Exec=#{HOMEBREW_PREFIX}/bin/antigravity %F
       Icon=#{Dir.home}/.local/share/icons/antigravity.png
@@ -58,19 +58,19 @@ cask "antigravity-linux" do
       StartupNotify=false
       StartupWMClass=Antigravity
       Categories=TextEditor;Development;IDE;
-      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;x-scheme-handler/antigravity;
-      Actions=open-antigravity;
-      Keywords=antigravity;
+      MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-antigravity-workspace;
+      Actions=new-empty-window;
+      Keywords=vscode;antigravity;
 
-      [Desktop Action open-antigravity]
-      Name=Open Antigravity
-      Exec=#{HOMEBREW_PREFIX}/bin/antigravity %F
+      [Desktop Action new-empty-window]
+      Name=New Empty Window
+      Exec=#{HOMEBREW_PREFIX}/bin/antigravity --new-window %F
       Icon=#{Dir.home}/.local/share/icons/antigravity.png
     EOS
     File.write("#{staged_path}/Antigravity/antigravity-url-handler.desktop", <<~EOS)
       [Desktop Entry]
-      Name=Google Antigravity - URL Handler
-      Comment=Agentic Development Platform
+      Name=Antigravity - URL Handler
+      Comment=Experience liftoff
       GenericName=Text Editor
       Exec=#{HOMEBREW_PREFIX}/bin/antigravity --open-url %U
       Icon=#{Dir.home}/.local/share/icons/antigravity.png
