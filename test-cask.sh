@@ -44,7 +44,7 @@ CASK_FILE="Casks/${CASK_NAME}.rb"
 if [[ "${UNTAP_ONLY}" == "true" ]]
 then
   echo "Removing temporary tap ${TAP_NAME}..."
-  brew untap "${TAP_NAME}" || echo "Tap not found or already removed."
+  brew untap --force --verbose "${TAP_NAME}" || echo "Tap not found or already removed."
   exit 0
 fi
 
@@ -53,7 +53,7 @@ then
   echo "Cleaning up ${TAP_NAME}/${CASK_NAME}..."
   brew uninstall --cask "${TAP_NAME}/${CASK_NAME}" || echo "Not installed or uninstall failed."
   echo "Removing temporary tap..."
-  brew untap "${TAP_NAME}" || echo "Tap not found or already removed."
+  brew untap --force --verbose "${TAP_NAME}" || echo "Tap not found or already removed."
   exit 0
 fi
 

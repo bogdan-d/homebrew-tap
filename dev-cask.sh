@@ -45,7 +45,7 @@ set -- "${ARGS[@]}"
 if [[ "${COMMAND}" == "untap" ]]
 then
   echo "Removing temporary tap ${TAP_NAME}..."
-  brew untap "${TAP_NAME}" || echo "Tap not found or already removed."
+  brew untap --force --verbose "${TAP_NAME}" || echo "Tap not found or already removed."
   exit 0
 fi
 
@@ -68,7 +68,7 @@ then
   echo "Cleaning up ${FULL_CASK_NAME}..."
   brew uninstall --cask "${FULL_CASK_NAME}" || echo "Not installed or uninstall failed."
   echo "Removing temporary tap..."
-  brew untap "${TAP_NAME}" || echo "Tap not found or already removed."
+  brew untap --force --verbose "${TAP_NAME}" || echo "Tap not found or already removed."
   exit 0
 fi
 
