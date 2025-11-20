@@ -1,9 +1,8 @@
 cask "antigravity-linux" do
-  # version format is "<pkgver>,<buildid>" - AUR PKGBUILD provides both
-  version "1.11.5,5234145629700096"
+  version "1.11.5-5234145629700096"
   sha256 "4e03151a55743cf30fac595abb343c9eb5a3b6a80d2540136d75b4ead8072112"
 
-  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version.csv.first}-#{version.csv.second}/linux-x64/Antigravity.tar.gz"
+  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/linux-x64/Antigravity.tar.gz"
   name "Google Antigravity"
   desc "Google Antigravity - Experience liftoff"
   homepage "https://antigravity.google/"
@@ -37,10 +36,6 @@ cask "antigravity-linux" do
     end
   end
 
-  # The upstream tarball sometimes contains the binary as: "Antigravity",
-  # "antigravity", or under "Antigravity/bin/antigravity". We normalize
-  # the install by creating a consistent "Antigravity/bin/antigravity" symlink
-  # during the preflight stage and then using the binary stanza below.
   binary "Antigravity/bin/antigravity"
   bash_completion "Antigravity/resources/completions/bash/antigravity"
   zsh_completion "Antigravity/resources/completions/zsh/_antigravity"
@@ -52,24 +47,6 @@ cask "antigravity-linux" do
            target: "#{Dir.home}/.local/share/icons/antigravity.png"
 
   preflight do
-    # Ensure there is a stable path for the binary regardless of actual file name
-    begin
-      bin_dir = "#{staged_path}/Antigravity/bin"
-      FileUtils.mkdir_p bin_dir
-
-      candidates = [
-        "#{staged_path}/Antigravity/Antigravity",
-        "#{staged_path}/Antigravity/antigravity",
-        "#{staged_path}/Antigravity/bin/antigravity",
-      ]
-
-      candidate = candidates.find { |f| File.exist?(f) }
-      FileUtils.ln_s(candidate, "#{bin_dir}/antigravity") if candidate && !File.exist?("#{bin_dir}/antigravity")
-    rescue => e
-      # Don't abort install if something goes wrong here; fall back to default behavior.
-      odie "Failed to create Antigravity binary symlink: #{e}" if defined?(odie)
-    end
-
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
 
     File.write("#{staged_path}/Antigravity/antigravity.desktop", <<~EOS)
@@ -104,7 +81,7 @@ cask "antigravity-linux" do
       StartupNotify=true
       Categories=Utility;TextEditor;Development;IDE;
       MimeType=x-scheme-handler/antigravity;
-      Keywords=antigravity;
+      Keywords=vscode;antigravity;
     EOS
   end
 
@@ -112,5 +89,6 @@ cask "antigravity-linux" do
   # zap trash: [
   #   "~/.config/Antigravity",
   #   "~/.antigravity",
+  #   "~/.gemini",
   # ]
 end
