@@ -1,80 +1,60 @@
-# My personal Homebrew Tap
+# BogdanD - Homebrew Linux Tap
 
-This is a _staging area_ to test Linux casks builds of things I want. It is intended to show that homebrew casks on linux work great. This repository's metric of success is when the applications in here are deleted. This also ships artwork and OEM tools that are better managed in userspace than on an image.
+This repository is a Homebrew "tap" providing Linux casks and user-space packages for Fedora Atomic (and related Fedora-based derivatives). It contains casks for applications and assets that are better installed in user-space than as system packages—IDEs, developer tools, OEM utilities, and wallpapers.
 
-Homebrew has asked us to run this as a tap as opposed to PRing these into individual projects, and that will take some work so in the meantime we can test.
+Quick start
+1. Tap the repository (replace <user>/<repo> as appropriate):
 
-### Experimental Tap
-
-We have some in-progress, but not quite finished formulas and casks in an [experimental tap](https://github.com/bogdan-d/experimental-tap). If you wish to experiment or provide feedback, check it out. Please send pull requests first, this is the production tap!
-
-## This is useful for
-
-IDEs like Jetbrains and VSCode. They don't run well out of flatpaks so we put them on their own images. This lets the user also opt-into vscode instead of having it on a -dx image even if you don't use it.
-
-```shell
+```bash
 brew tap bogdan-d/tap
+```
+
+2. Install a cask:
+
+```bash
 brew install --cask visual-studio-code-linux
-brew install --cask visual-studio-code-insiders-linux
 brew install --cask vscodium-linux
-brew install --cask zed-linux
-brew install --cask lm-studio-linux
-
-brew install --cask bluefin-wallpapers
-brew install --cask bluefin-wallpapers-extra
-brew install --cask aurora-wallpapers
-brew install --cask bazzite-wallpapers
-brew install --cask framework-wallpapers
 ```
 
-## Includes
+What’s included
+- IDEs and developer editors: VS Code, VSCodium, Zed, LM Studio
+- OEM or hardware tools: Framework System Tool
+- Wallpapers and desktop assets (Bluefin, Aurora, Bazzite, etc.)
 
-- LM Studio - Local LLM discovery, download, and runtime
-- Visual Studio Code - Microsoft's code editor
-- Visual Studio Code Insiders - Preview/Insiders channel of VS Code
-- Zed - High-performance, multiplayer code editor
-- VSCodium - Open-source build of VS Code
-- Framework System Tool - Hardware management for Framework laptops
+Working with this repo
+- Casks are located in `Casks/` — each cask is a single Ruby DSL file. Follow conventions already used in this repo: `version`, `sha256`, `url`, `artifact`, and `preflight` blocks.
+- Use `arch` and `on_arm`/`on_intel` conditionals for multi-arch builds.
+- For painting desktop files/icons or replacing Exec paths, prefer `artifact` and `preflight` transformations.
 
-### Wallpapers
+Checks & automation
+- Audit and style-check casks before opening a PR:
 
-Metadata for GNOME is usually there.
-
-If you are on KDE then [follow these instructions](https://github.com/renner0e/bluefin-wallpapers-plasma).
-
-- Bluefin Wallpapers - Wallpapers for Bluefin
-- Bluefin Extra Wallpapers - Additional wallpapers for Bluefin
-- Aurora Wallpapers - Art made for Aurora
-- Bazzite Wallpapers - Wallpapers made for Bazzite
-- Framework Wallpapers
-
-## Checks & QA
-
-Before opening a PR or publishing a cask, please run the following checks locally. These are the same commands used in our agent guidance and help keep casks consistent:
-
-```pwsh
-# Audit and style checks
-brew audit --cask --online Casks/<cask-file>.rb
-brew style Casks/<cask-file>.rb
-
-# Optional: run livecheck for casks that expose a version
-brew livecheck --cask Casks/<cask-file>.rb
-
-# When updating a cask's version, create a bump PR
-brew bump-cask-pr Casks/<cask-file>.rb
+```bash
+./audit.sh Casks/<cask-file>.rb
+./style.sh Casks/<cask-file>.rb
 ```
 
-Notes:
-- Rolling/preview/insiders casks often use `version :latest` and `sha256 :no_check` — check the cask source if you need strict checksums.
-- Follow existing patterns: use `arch` multi-arch declarations where applicable, `artifact` for desktop files/icons, and `preflight` blocks to rewrite Exec/Icon paths when needed (see `Casks/visual-studio-code-linux.rb`).
+- When updating a cask’s version, update both `version` and `sha256`, and create a bump PR using `brew bump-cask-pr` if applicable.
 
-## Developer scripts
+Contributing
+- Open a PR with a clear description and check CI output. Small, focused PRs are preferred (one cask per PR when possible).
+- If a cask is experimental or preview, prefer `version :latest` and `sha256 :no_check`, but document the reasoning.
 
-This repository includes a couple of helper scripts you can use while working on the
-tap:
+License & notice
+- This repository is a personal/homebrew tap. Use the casks responsibly and follow upstream licenses for included software.
 
-	./style.sh [cask-name|path ...]  # Run `brew style --fix` on a cask or all casks
-	./audit.sh [cask-name|path ...]  # Run `brew audit --cask` on a cask or all casks
+Developer scripts
 
-Both scripts accept either a cask name (e.g., `antigravity-linux`) or a path
-(`Casks/antigravity-linux.rb`). Use `-h` or `--help` to view help text.
+This repository includes helper scripts to speed up development and local testing of casks:
+
+- `./style.sh [cask-name|path ...]`: Run `brew style` on one or more casks (supports `--fix`).
+- `./audit.sh [cask-name|path ...]`: Run `brew audit --cask` on one or more casks.
+- `./dev-cask.sh <command> <cask_name> [options]`: Local testing wrapper. It creates a temporary local tap at `bogdan-d/local-test`, copies the cask file into the tap, and runs the specified command:
+	- Commands: `install`, `audit`, `livecheck`, `style`, `cleanup`, `untap`.
+	- Options: `--keep` to skip cleanup (keep the temporary tap and the installed cask for manual inspection).
+	- Example: `./dev-cask.sh install antigravity-linux --keep`
+
+- `./test-cask.sh <cask_name> [--keep] [--cleanup] [--untap]`: A lightweight test harness which will commit or copy your local cask into the temporary tap, install it using `brew install --cask --verbose`, and optionally keep or clean up the install.
+	- Example: `./test-cask.sh antigravity-linux`
+
+Both dev/test scripts require Homebrew to be installed and accessible in your PATH. They help you validate casks against a local tap without publishing changes upstream.
