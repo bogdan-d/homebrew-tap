@@ -1,44 +1,32 @@
 cask "antigravity-linux" do
-  version "1.11.5-5234145629700096"
-  sha256 "4e03151a55743cf30fac595abb343c9eb5a3b6a80d2540136d75b4ead8072112"
+  arch arm: "arm", intel: "x64"
+  os linux: "linux"
 
-  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/linux-x64/Antigravity.tar.gz"
+  version "1.11.5-5234145629700096"
+  sha256 arm64_linux:  "e154dc745c51c7aadc33becee985188c92246a36a16ee0ba545c422172f8d0c2",
+         x86_64_linux: "4e03151a55743cf30fac595abb343c9eb5a3b6a80d2540136d75b4ead8072112"
+
+  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/linux-#{arch}/Antigravity.tar.gz",
+      verified: "edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/"
   name "Google Antigravity"
   desc "Google Antigravity - Experience liftoff"
   homepage "https://antigravity.google/"
 
   livecheck do
-    # Use the AUR PKGBUILD for version and buildid detection. AUR can be
-    # flaky with 502s/503s, so fetch it with curl and retries and fall back
-    # gracefully when the upstream is unavailable.
-    url "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=antigravity-bin"
-    regex(/pkgver=(\d+(?:\.\d+)+).*?_buildid=(\d+)/m)
-    strategy :page_match do |_page, regex|
-      aur_url = "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=antigravity-bin"
-      headers = [
-        "-H", "User-Agent: Homebrew/4.4.5 (Linux; x64; Ubuntu 22.04.4 LTS) curl/7.81.0",
-        "-H", "Accept: text/plain"
-      ]
-
-      # Retry 4 times with a 2 second delay to handle transient AUR failures
-      cmd = [
-        "curl", "--fail", "--silent", "--show-error", "--location",
-        "--retry", "4", "--retry-delay", "2", *headers, aur_url
-      ]
-
-      stdout, _, status = Open3.capture3(*cmd)
-      next if !status.success? || stdout.blank?
-
-      match = stdout.match(regex)
+    arch_for_livecheck = on_arch_conditional arm: "arm64", intel: "x64"
+    url "https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/#{os}-#{arch_for_livecheck}/stable/latest"
+    regex(%r{/stable/([^/]+)/}i)
+    strategy :json do |json, regex|
+      match = json["url"]&.match(regex)
       next if match.blank?
 
-      "#{match[1]},#{match[2]}"
+      match[1]
     end
   end
 
-  binary "Antigravity/bin/antigravity"
-  bash_completion "Antigravity/resources/completions/bash/antigravity"
-  zsh_completion "Antigravity/resources/completions/zsh/_antigravity"
+  binary "#{staged_path}/Antigravity/bin/antigravity"
+  bash_completion "#{staged_path}/Antigravity/resources/completions/bash/antigravity"
+  zsh_completion  "#{staged_path}/Antigravity/resources/completions/zsh/_antigravity"
   artifact "Antigravity/antigravity.desktop",
            target: "#{Dir.home}/.local/share/applications/antigravity.desktop"
   artifact "Antigravity/antigravity-url-handler.desktop",
@@ -62,7 +50,7 @@ cask "antigravity-linux" do
       Categories=TextEditor;Development;IDE;
       MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-antigravity-workspace;
       Actions=new-empty-window;
-      Keywords=vscode;antigravity;
+      Keywords=vscode;antigravity;code;editor;ai;
 
       [Desktop Action new-empty-window]
       Name=New Empty Window
@@ -87,8 +75,8 @@ cask "antigravity-linux" do
 
   # ! NO zapping !
   # zap trash: [
-  #   "~/.config/Antigravity",
   #   "~/.antigravity",
+  #   "~/.config/Antigravity",
   #   "~/.gemini",
   # ]
 end

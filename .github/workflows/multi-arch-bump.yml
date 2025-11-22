@@ -1,0 +1,51 @@
+name: Multi-Arch Cask Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      cask:
+        description: "Cask name (without .rb)"
+        required: true
+      endpoint:
+        description: "Endpoint template with {arch} placeholder"
+        required: true
+      arches:
+        description: "Space-separated arch list (e.g. 'x64 arm64')"
+        required: false
+        default: "x64 arm64"
+      version_json_key:
+        description: "JSON key for version (leave blank to parse from URL)"
+        required: false
+        default: ""
+      sha_json_key:
+        description: "JSON key for sha256 (default sha256hash)"
+        required: false
+        default: "sha256hash"
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Fetch multi-arch shas
+        run: bash scripts/ci-multi-arch-bump.sh "${{ github.event.inputs.cask }}" "${{ github.event.inputs.endpoint }}" "${{ github.event.inputs.arches }}" "${{ github.event.inputs.version_json_key }}" "${{ github.event.inputs.sha_json_key }}"
+
+      - name: Style check
+        run: brew style "Casks/${{ github.event.inputs.cask }}.rb"
+
+      - name: Show diff
+        run: git --no-pager diff HEAD~1..HEAD || echo "No diff (maybe unchanged)"
+
+      - name: Create PR
+        if: ${{ success() }}
+        run: bash scripts/ci-create-pr.sh "${{ github.event.inputs.cask }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
