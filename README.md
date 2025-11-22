@@ -22,7 +22,7 @@ What's included
 
 Working with this repo
 - Casks are located in `Casks/` - each cask is a single Ruby DSL file. Follow conventions already used in this repo: `version`, `sha256`, `url`, `artifact`, and `preflight` blocks.
-- Use `arch` and `on_arm`/`on_intel` conditionals for multi-arch builds.
+- Use `arch` (and `os linux: "linux"` where appropriate) for multi-arch builds; avoid `on_arm`/`on_intel` inside `livecheck` (unsupported there).
 - For painting desktop files/icons or replacing Exec paths, prefer `artifact` and `preflight` transformations.
 
 Checks & automation
@@ -37,6 +37,20 @@ Checks & automation
 ```
 
 - When updating a cask's version, update both `version` and `sha256`, and create a bump PR using `brew bump-cask-pr` if applicable.
+ - For multi-arch updates where upstream provides per-arch JSON metadata, use the helper:
+
+```bash
+./scripts/fetch-multi-arch-shas.sh antigravity-linux \
+	--endpoint 'https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-{arch}/stable/latest' \
+	--arches 'x64 arm64' --update Casks/antigravity-linux.rb --commit
+
+./scripts/fetch-multi-arch-shas.sh visual-studio-code-linux \
+	--endpoint 'https://update.code.visualstudio.com/api/update/linux-{arch}/stable/latest' \
+	--version-json-key productVersion --sha-json-key sha256hash \
+	--arches 'x64 arm64' --update Casks/visual-studio-code-linux.rb --commit
+```
+
+ - For a manual GitHub Action bump (no local environment), trigger `Multi-Arch Cask Bump` workflow with the appropriate inputs.
 
 Contributing
 - Open a PR with a clear description and check CI output. Small, focused PRs are preferred (one cask per PR when possible).

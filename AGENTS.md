@@ -39,6 +39,16 @@ Useful examples
 - `Casks/framework-tool.rb` — minimal-binary cask example
 
 Helper scripts
-- `scripts/fetch-multi-arch-shas.sh` — fetches version + sha256 for both linux architectures (arm64/x64) from JSON endpoints and can optionally patch a cask file. Use `--json` for machine-readable output or `--update <caskfile>` to apply changes.
+- `scripts/fetch-multi-arch-shas.sh` — generalized multi-arch helper. Key options:
+	- `--endpoint 'https://.../linux-{arch}/stable/latest'` template with `{arch}` placeholder
+	- `--arches 'x64 arm64'` specify arch set
+	- `--version-json-key productVersion` use JSON field for version (else parsed from URL `/stable/<ver>/`)
+	- `--sha-json-key sha256hash` override sha field name
+	- `--update Casks/<cask>.rb --commit` patch and commit version + both shas
+	- `--json` machine-readable `{version, sha256:{...}}` output
+	- `--dry-run` show what would change without modifying file
+
+GitHub Actions workflow
+- `.github/workflows/multi-arch-bump.yml` — manual dispatch workflow to update a cask using the helper script, run style, and open a PR. Inputs allow overriding endpoint, arches, and JSON keys.
 
 If you need more specifics (example diffs, lint outputs, or a PR template), open a discussion or leave a draft PR and request feedback.
