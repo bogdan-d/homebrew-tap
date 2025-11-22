@@ -23,7 +23,7 @@ on:
         default: "sha256hash"
 
 jobs:
-  bump:
+  ma-bump:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
