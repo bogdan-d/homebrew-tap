@@ -5,6 +5,7 @@
 #   install     Install the cask (wrapper for brew install --cask). Defaults to cleanup after unless --keep is used.
 #   audit       Audit the cask (wrapper for brew audit --cask)
 #   livecheck   Check for newer versions (wrapper for brew livecheck)
+#   bump        Check for outdated versions (wrapper for brew bump)
 #   style       Check code style (wrapper for brew style)
 #   cleanup     Uninstall the cask and remove the tap
 #   untap       Remove the tap
@@ -21,7 +22,7 @@ TAP_NAME="bogdan-d/local-test"
 if [[ -z "$1" ]]
 then
   echo "Usage: ./dev-cask.sh <command> <cask_name> [options]"
-  echo "Commands: install, audit, livecheck, style, cleanup, untap"
+  echo "Commands: install, audit, livecheck, bump, style, cleanup, untap"
   exit 1
 fi
 
@@ -141,6 +142,12 @@ case "${COMMAND}" in
     BREW_ARGS=()
     [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
     brew livecheck "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" "$@"
+    ;;
+  bump)
+    BREW_ARGS=()
+    [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+    BREW_ARGS+=(--tap "${TAP_NAME}" --no-fork --cask)
+    brew bump "${BREW_ARGS[@]}" "${CASK_NAME}" "$@"
     ;;
   *)
     echo "Unknown command: ${COMMAND}"

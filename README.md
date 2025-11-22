@@ -32,6 +32,7 @@ Checks & automation
 ./dev-cask.sh style visual-studio-code-linux --fix
 ./dev-cask.sh audit visual-studio-code-linux
 ./dev-cask.sh livecheck visual-studio-code-linux
+./dev-cask.sh bump visual-studio-code-linux
 ./dev-cask.sh install --keep --verbose visual-studio-code-linux
 ./dev-cask.sh cleanup --debug --verbose visual-studio-code-linux
 ```
