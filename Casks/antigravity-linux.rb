@@ -2,25 +2,18 @@ cask "antigravity-linux" do
   arch arm: "arm", intel: "x64"
   os linux: "linux"
 
-  livecheck_arch = on_intel do
-    "x64"
-  end
   version "1.11.5-5234145629700096"
   sha256 arm64_linux:  "e154dc745c51c7aadc33becee985188c92246a36a16ee0ba545c422172f8d0c2",
          x86_64_linux: "4e03151a55743cf30fac595abb343c9eb5a3b6a80d2540136d75b4ead8072112"
 
-  on_arm do
-    "arm64"
-  end
-
-  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/linux-#{arch}/Antigravity.tar.gz",
+  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/#{os}-#{arch}/Antigravity.tar.gz",
       verified: "edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/"
   name "Google Antigravity"
   desc "Google Antigravity - Experience liftoff"
   homepage "https://antigravity.google/"
 
   livecheck do
-    url "https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/#{os}-#{livecheck_arch}/stable/latest"
+    url "https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-x64/stable/latest"
     regex(%r{/stable/([^/]+)/}i)
     strategy :json do |json, regex|
       match = json["url"]&.match(regex)
@@ -37,11 +30,17 @@ cask "antigravity-linux" do
            target: "#{Dir.home}/.local/share/applications/antigravity.desktop"
   artifact "Antigravity/antigravity-url-handler.desktop",
            target: "#{Dir.home}/.local/share/applications/antigravity-url-handler.desktop"
-  artifact "Antigravity/resources/app/resources/linux/code.png",
-           target: "#{Dir.home}/.local/share/icons/antigravity.png"
+  artifact "antigravity.png",
+           target: "#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity.png"
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
+    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons/hicolor/512x512/apps"
+
+    # Copy icon from extracted archive
+    icon_path = "Antigravity/resources/app/out/vs/workbench/contrib/antigravityCustomAppIcon"
+    icon_source = "#{staged_path}/#{icon_path}/browser/media/antigravity/antigravity.png"
+    FileUtils.cp icon_source, "#{staged_path}/antigravity.png" if File.exist?(icon_source)
 
     File.write("#{staged_path}/Antigravity/antigravity.desktop", <<~EOS)
       [Desktop Entry]
@@ -49,7 +48,7 @@ cask "antigravity-linux" do
       Comment=Experience liftoff
       GenericName=Text Editor
       Exec=#{HOMEBREW_PREFIX}/bin/antigravity %F
-      Icon=#{Dir.home}/.local/share/icons/antigravity.png
+      Icon=#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity.png
       Type=Application
       StartupNotify=false
       StartupWMClass=Antigravity
@@ -61,7 +60,7 @@ cask "antigravity-linux" do
       [Desktop Action new-empty-window]
       Name=New Empty Window
       Exec=#{HOMEBREW_PREFIX}/bin/antigravity --new-window %F
-      Icon=#{Dir.home}/.local/share/icons/antigravity.png
+      Icon=#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity.png
     EOS
     File.write("#{staged_path}/Antigravity/antigravity-url-handler.desktop", <<~EOS)
       [Desktop Entry]
@@ -77,6 +76,9 @@ cask "antigravity-linux" do
       MimeType=x-scheme-handler/antigravity;
       Keywords=vscode;antigravity;
     EOS
+
+    # Create a placeholder icon if extraction fails
+    FileUtils.touch "#{staged_path}/antigravity.png" unless File.exist?("#{staged_path}/antigravity.png")
   end
 
   # ! NO zapping !
