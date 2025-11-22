@@ -38,4 +38,7 @@ Useful examples
 - `Casks/visual-studio-code-linux.rb` — multi-arch handling and desktop transformations
 - `Casks/framework-tool.rb` — minimal-binary cask example
 
+Helper scripts
+- `scripts/fetch-multi-arch-shas.sh` — fetches version + sha256 for both linux architectures (arm64/x64) from JSON endpoints and can optionally patch a cask file. Use `--json` for machine-readable output or `--update <caskfile>` to apply changes.
+
 If you need more specifics (example diffs, lint outputs, or a PR template), open a discussion or leave a draft PR and request feedback.
