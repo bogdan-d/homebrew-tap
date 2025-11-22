@@ -1,11 +1,17 @@
 cask "antigravity-linux" do
   arch arm: "arm", intel: "x64"
   os linux: "linux"
-  livecheck_arch = Hardware::CPU.intel? ? "x64" : "arm64"
 
+  livecheck_arch = on_intel do
+    "x64"
+  end
   version "1.11.5-5234145629700096"
   sha256 arm64_linux:  "e154dc745c51c7aadc33becee985188c92246a36a16ee0ba545c422172f8d0c2",
          x86_64_linux: "4e03151a55743cf30fac595abb343c9eb5a3b6a80d2540136d75b4ead8072112"
+
+  on_arm do
+    "arm64"
+  end
 
   url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/linux-#{arch}/Antigravity.tar.gz",
       verified: "edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/"
