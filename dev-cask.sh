@@ -11,7 +11,8 @@
 #
 # Options:
 #   --keep      Do not cleanup (uninstall/untap) after the command
-#   --debug     Enable debug output
+#   --debug     Enable debug output (set -x)
+#   --verbose   Pass --verbose to brew commands where applicable
 
 set -e
 
@@ -29,11 +30,15 @@ shift
 
 # Parse options
 KEEP=false
+DEBUG=false
+VERBOSE=false
 ARGS=()
 while [[ "$#" -gt 0 ]]
 do
   case "$1" in
     --keep) KEEP=true ;;
+    --debug) DEBUG=true ;;
+    --verbose) VERBOSE=true ;;
     *) ARGS+=("$1") ;;
   esac
   shift
@@ -42,10 +47,18 @@ done
 # Restore positional arguments
 set -- "${ARGS[@]}"
 
+# Enable debug mode if requested
+if [[ "${DEBUG}" == "true" ]]
+then
+  set -x
+fi
+
 if [[ "${COMMAND}" == "untap" ]]
 then
   echo "Removing temporary tap ${TAP_NAME}..."
-  brew untap --force --verbose "${TAP_NAME}" || echo "Tap not found or already removed."
+  BREW_ARGS=(--force)
+  [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+  brew untap "${BREW_ARGS[@]}" "${TAP_NAME}" || echo "Tap not found or already removed."
   exit 0
 fi
 
@@ -63,12 +76,26 @@ CASK_NAME="${CASK_NAME%.rb}"
 CASK_FILE="Casks/${CASK_NAME}.rb"
 FULL_CASK_NAME="${TAP_NAME}/${CASK_NAME}"
 
+# Just run the style directly on the file(s)
+if [[ "${COMMAND}" == "style" ]]
+then
+  echo "Running style check..."
+  BREW_ARGS=()
+  [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+  brew style "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" "$@"
+  exit 0
+fi
+
 if [[ "${COMMAND}" == "cleanup" ]]
 then
   echo "Cleaning up ${FULL_CASK_NAME}..."
-  brew uninstall --cask "${FULL_CASK_NAME}" || echo "Not installed or uninstall failed."
+  BREW_ARGS=(--cask)
+  [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+  brew uninstall "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" || echo "Not installed or uninstall failed."
   echo "Removing temporary tap..."
-  brew untap --force --verbose "${TAP_NAME}" || echo "Tap not found or already removed."
+  BREW_ARGS=(--force)
+  [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+  brew untap "${BREW_ARGS[@]}" "${TAP_NAME}" || echo "Tap not found or already removed."
   exit 0
 fi
 
@@ -101,16 +128,19 @@ echo "Running ${COMMAND} for ${FULL_CASK_NAME}..."
 
 case "${COMMAND}" in
   install)
-    brew install --cask --verbose "${FULL_CASK_NAME}" "$@"
+    BREW_ARGS=(--cask)
+    [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+    brew install "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" "$@"
     ;;
   audit)
-    brew audit --cask "${FULL_CASK_NAME}" "$@"
+    BREW_ARGS=(--cask)
+    [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+    brew audit "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" "$@"
     ;;
   livecheck)
-    brew livecheck "${FULL_CASK_NAME}" "$@"
-    ;;
-  style)
-    brew style "${FULL_CASK_NAME}" "$@"
+    BREW_ARGS=()
+    [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+    brew livecheck "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" "$@"
     ;;
   *)
     echo "Unknown command: ${COMMAND}"
@@ -125,11 +155,15 @@ else
   echo "Cleaning up..."
   if [[ "${COMMAND}" == "install" ]]
   then
-    brew uninstall --cask "${FULL_CASK_NAME}" || true
+    BREW_ARGS=(--cask)
+    [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+    brew uninstall "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" || true
   fi
   # For all commands (including install), we untap if not keeping
   echo "Removing temporary tap..."
-  brew untap --force --verbose "${TAP_NAME}" || true
+  BREW_ARGS=(--force)
+  [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
+  brew untap "${BREW_ARGS[@]}" "${TAP_NAME}" || true
   echo "Cleanup complete."
 fi
 
