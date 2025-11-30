@@ -22,15 +22,14 @@ cask "visual-studio-code-insiders-linux" do
   binary "VSCode-linux-#{arch}/bin/code-tunnel-insiders"
   bash_completion "#{staged_path}/VSCode-linux-#{arch}/resources/completions/bash/code-insiders"
   zsh_completion  "#{staged_path}/VSCode-linux-#{arch}/resources/completions/zsh/_code-insiders"
-  artifact "VSCode-linux-#{arch}/code-insiders.desktop",
-           target: "#{Dir.home}/.local/share/applications/code-insiders.desktop"
-  artifact "VSCode-linux-#{arch}/code-insiders-url-handler.desktop",
-           target: "#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop"
-  artifact "VSCode-linux-#{arch}/resources/app/resources/linux/code.png",
-           target: "#{Dir.home}/.local/share/icons/vscode-insiders.png"
+
+  # NOTE: Using preflight to install desktop/icon files instead of `artifact` stanza
+  # to work around Homebrew bug with OS::Linux::Pathname type signature.
+  # See: https://github.com/Homebrew/brew/issues (Sorbet type mismatch in add_altname_metadata)
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
+    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons"
 
     File.write("#{staged_path}/VSCode-linux-#{arch}/code-insiders.desktop", <<~EOS)
       [Desktop Entry]
@@ -66,6 +65,37 @@ cask "visual-studio-code-insiders-linux" do
       MimeType=x-scheme-handler/vscode;
       Keywords=vscode;insiders;
     EOS
+
+    # Copy desktop files and icon (workaround for Homebrew artifact bug)
+    FileUtils.cp("#{staged_path}/VSCode-linux-#{arch}/code-insiders.desktop",
+                 "#{Dir.home}/.local/share/applications/code-insiders.desktop")
+    FileUtils.cp("#{staged_path}/VSCode-linux-#{arch}/code-insiders-url-handler.desktop",
+                 "#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop")
+    FileUtils.cp("#{staged_path}/VSCode-linux-#{arch}/resources/app/resources/linux/code.png",
+                 "#{Dir.home}/.local/share/icons/vscode-insiders.png")
+  end
+
+  postflight do
+    # Create symlinks back to staged path for uninstall tracking
+    # (mimics what artifact stanza would do)
+    source_desktop = "#{staged_path}/VSCode-linux-#{arch}/code-insiders.desktop"
+    source_url_handler = "#{staged_path}/VSCode-linux-#{arch}/code-insiders-url-handler.desktop"
+    source_icon = "#{staged_path}/VSCode-linux-#{arch}/resources/app/resources/linux/code.png"
+
+    FileUtils.ln_sf("#{Dir.home}/.local/share/applications/code-insiders.desktop", source_desktop) if File.exist?(source_desktop)
+    FileUtils.ln_sf("#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop", source_url_handler) if File.exist?(source_url_handler)
+    FileUtils.ln_sf("#{Dir.home}/.local/share/icons/vscode-insiders.png", source_icon) if File.exist?(source_icon)
+  end
+
+  uninstall_preflight do
+    # Remove the installed files that we copied in preflight
+    desktop = "#{Dir.home}/.local/share/applications/code-insiders.desktop"
+    url_handler = "#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop"
+    icon = "#{Dir.home}/.local/share/icons/vscode-insiders.png"
+
+    FileUtils.rm_f(desktop) if File.exist?(desktop)
+    FileUtils.rm_f(url_handler) if File.exist?(url_handler)
+    FileUtils.rm_f(icon) if File.exist?(icon)
   end
 
   # ! NO zapping !
