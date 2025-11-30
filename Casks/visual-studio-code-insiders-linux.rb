@@ -79,23 +79,24 @@ cask "visual-studio-code-insiders-linux" do
     # Create symlinks back to staged path for uninstall tracking
     # (mimics what artifact stanza would do)
     source_desktop = "#{staged_path}/VSCode-linux-#{arch}/code-insiders.desktop"
-    source_url_handler = "#{staged_path}/VSCode-linux-#{arch}/code-insiders-url-handler.desktop"
+    source_url = "#{staged_path}/VSCode-linux-#{arch}/code-insiders-url-handler.desktop"
     source_icon = "#{staged_path}/VSCode-linux-#{arch}/resources/app/resources/linux/code.png"
 
-    FileUtils.ln_sf("#{Dir.home}/.local/share/applications/code-insiders.desktop", source_desktop) if File.exist?(source_desktop)
-    FileUtils.ln_sf("#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop", source_url_handler) if File.exist?(source_url_handler)
-    FileUtils.ln_sf("#{Dir.home}/.local/share/icons/vscode-insiders.png", source_icon) if File.exist?(source_icon)
+    target_desktop = "#{Dir.home}/.local/share/applications/code-insiders.desktop"
+    target_url = "#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop"
+    target_icon = "#{Dir.home}/.local/share/icons/vscode-insiders.png"
+
+    FileUtils.ln_sf(target_desktop, source_desktop) if File.exist?(source_desktop)
+    FileUtils.ln_sf(target_url, source_url) if File.exist?(source_url)
+    FileUtils.ln_sf(target_icon, source_icon) if File.exist?(source_icon)
   end
 
   uninstall_preflight do
     # Remove the installed files that we copied in preflight
-    desktop = "#{Dir.home}/.local/share/applications/code-insiders.desktop"
-    url_handler = "#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop"
-    icon = "#{Dir.home}/.local/share/icons/vscode-insiders.png"
-
-    FileUtils.rm_f(desktop) if File.exist?(desktop)
-    FileUtils.rm_f(url_handler) if File.exist?(url_handler)
-    FileUtils.rm_f(icon) if File.exist?(icon)
+    FileUtils.rm("#{Dir.home}/.local/share/applications/code-insiders.desktop", force: true)
+    FileUtils.rm("#{Dir.home}/.local/share/applications/code-insiders-url-handler.desktop",
+                 force: true)
+    FileUtils.rm("#{Dir.home}/.local/share/icons/vscode-insiders.png", force: true)
   end
 
   # ! NO zapping !

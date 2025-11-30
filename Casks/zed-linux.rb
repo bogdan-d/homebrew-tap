@@ -50,18 +50,17 @@ cask "zed-linux" do
     # (mimics what artifact stanza would do)
     source_desktop = "#{staged_path}/zed.desktop"
     source_icon = "#{staged_path}/zed.app/share/icons/hicolor/512x512/apps/zed.png"
+    target_desktop = "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
+    target_icon = "#{Dir.home}/.local/share/icons/zed.png"
 
-    FileUtils.ln_sf("#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop", source_desktop) if File.exist?(source_desktop)
-    FileUtils.ln_sf("#{Dir.home}/.local/share/icons/zed.png", source_icon) if File.exist?(source_icon)
+    FileUtils.ln_sf(target_desktop, source_desktop) if File.exist?(source_desktop)
+    FileUtils.ln_sf(target_icon, source_icon) if File.exist?(source_icon)
   end
 
   uninstall_preflight do
     # Remove the installed files that we copied in preflight
-    desktop = "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
-    icon = "#{Dir.home}/.local/share/icons/zed.png"
-
-    FileUtils.rm_f(desktop) if File.exist?(desktop)
-    FileUtils.rm_f(icon) if File.exist?(icon)
+    FileUtils.rm("#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop", force: true)
+    FileUtils.rm("#{Dir.home}/.local/share/icons/zed.png", force: true)
   end
 
   # ! NO zapping !
