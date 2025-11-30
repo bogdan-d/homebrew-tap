@@ -13,13 +13,15 @@ cask "zed-linux" do
 
   # Zed publishes .desktop inside the tarball, but we generate one to match our bin path
   binary "zed.app/bin/zed"
-  artifact "zed.app/share/icons/hicolor/512x512/apps/zed.png",
-           target: "#{Dir.home}/.local/share/icons/zed.png"
-  artifact "zed.desktop",
-           target: "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
+
+  # NOTE: Using preflight to install desktop/icon files instead of `artifact` stanza
+  # to work around Homebrew bug with OS::Linux::Pathname type signature.
+  # See: https://github.com/Homebrew/brew/issues (Sorbet type mismatch in add_altname_metadata)
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
+    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons"
+
     File.write("#{staged_path}/zed.desktop", <<~EOS)
       [Desktop Entry]
       Name=Zed
@@ -35,6 +37,30 @@ cask "zed-linux" do
       Keywords=zed;editor;code;ide;
       Terminal=false
     EOS
+
+    # Copy desktop file and icon (workaround for Homebrew artifact bug)
+    FileUtils.cp("#{staged_path}/zed.desktop",
+                 "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop")
+    FileUtils.cp("#{staged_path}/zed.app/share/icons/hicolor/512x512/apps/zed.png",
+                 "#{Dir.home}/.local/share/icons/zed.png")
+  end
+
+  postflight do
+    # Create symlinks back to staged path for uninstall tracking
+    # (mimics what artifact stanza would do)
+    source_desktop = "#{staged_path}/zed.desktop"
+    source_icon = "#{staged_path}/zed.app/share/icons/hicolor/512x512/apps/zed.png"
+    target_desktop = "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
+    target_icon = "#{Dir.home}/.local/share/icons/zed.png"
+
+    FileUtils.ln_sf(target_desktop, source_desktop) if File.exist?(source_desktop)
+    FileUtils.ln_sf(target_icon, source_icon) if File.exist?(source_icon)
+  end
+
+  uninstall_preflight do
+    # Remove the installed files that we copied in preflight
+    FileUtils.rm("#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop", force: true)
+    FileUtils.rm("#{Dir.home}/.local/share/icons/zed.png", force: true)
   end
 
   # ! NO zapping !
