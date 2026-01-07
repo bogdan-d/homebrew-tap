@@ -47,8 +47,16 @@ cask "block-goose-linux" do
     bsdtar = "#{HOMEBREW_PREFIX}/bin/bsdtar"
     # Extract usr/lib/* directly to staged_path (stripping the usr/lib prefix)
     # Using -v for verbose output to debug extraction
-    system_command bsdtar, args:         ["-xvf", rpm_path, "-C", staged_path, "--strip-components=3", "usr/lib/Goose"],
-                           must_succeed: true
+    system_command bsdtar,
+                   args:         [
+                     "-xvf",
+                     rpm_path,
+                     "-C",
+                     staged_path,
+                     "--strip-components=3",
+                     "usr/lib/Goose",
+                   ],
+                   must_succeed: true
 
     # Remove the RPM artifact after extraction
     FileUtils.rm(rpm_path)
