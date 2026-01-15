@@ -24,4 +24,5 @@ jobs:
           HOMEBREW_DEVELOPER: 1
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          brew tap homebrew/core
           brew bump --tap ${{ github.repository }} --open-pr --no-fork
