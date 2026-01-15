@@ -27,3 +27,12 @@ jobs:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           brew bump --tap ${{ github.repository }} --open-pr --no-fork
+
+      - name: Enable auto-merge on created PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Find PRs created by this workflow run (with "Created by `brew bump`" in body)
+          for pr_number in $(gh pr list --author "app/github-actions" --search "Created by \`brew bump\`" --json number --jq '.[].number'); do
+            gh pr merge "$pr_number" --auto --merge --delete-branch --subject "Auto-merge PR #$pr_number"
+          done

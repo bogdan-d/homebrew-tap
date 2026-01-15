@@ -3,17 +3,5 @@
   "extends": [
     "local>ublue-os/renovate-config"
   ],
-  "packageRules": [
-    {
-      "description": "Auto-merge PRs created by Homebrew bump workflow",
-      "matchManagers": [
-        "homebrew"
-      ],
-      "automerge": true,
-      "automergeType": "pr",
-      "matchUpdateTypes": [
-        "bump"
-      ]
-    }
-  ]
+  "packageRules": []
 }
