@@ -1,8 +1,8 @@
 class LibvirtFull < Formula
   desc "C virtualization API, now with udev support"
   homepage "https://libvirt.org/"
-  url "https://download.libvirt.org/libvirt-11.10.0.tar.xz"
-  sha256 "66154fee836235678b712676b2589c45f66e3d6a8721ee0697c9f20a66cad0d8"
+  url "https://download.libvirt.org/libvirt-12.0.0.tar.xz"
+  sha256 "bf4e680019c04c45b557dd4a7ef59e952887f74e3c47044fe035a961fb624726"
   license all_of: ["LGPL-2.1-or-later", "GPL-2.0-or-later"]
   head "https://gitlab.com/libvirt/libvirt.git", branch: "master"
 
