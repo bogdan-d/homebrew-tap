@@ -69,9 +69,8 @@ cask "visual-studio-code-linux" do
     EOS
   end
 
-  # ! NO zapping !
-  # zap trash: [
-  #   "~/.config/Code",
-  #   "~/.vscode",
-  # ]
+  zap trash: [
+    "~/.config/Code",
+    "~/.vscode",
+  ]
 end

@@ -81,10 +81,9 @@ cask "antigravity-linux" do
     FileUtils.touch "#{staged_path}/antigravity.png" unless File.exist?("#{staged_path}/antigravity.png")
   end
 
-  # ! NO zapping !
-  # zap trash: [
-  #   "~/.antigravity",
-  #   "~/.config/Antigravity",
-  #   "~/.gemini",
-  # ]
+  zap trash: [
+    "~/.antigravity",
+    "~/.config/Antigravity",
+    "~/.gemini",
+  ]
 end

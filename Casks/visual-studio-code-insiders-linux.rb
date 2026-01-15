@@ -68,9 +68,8 @@ cask "visual-studio-code-insiders-linux" do
     EOS
   end
 
-  # ! NO zapping !
-  # zap trash: [
-  #   "~/.config/Code - Insiders",
-  #   "~/.vscode-insiders",
-  # ]
+  zap trash: [
+    "~/.config/Code - Insiders",
+    "~/.vscode-insiders",
+  ]
 end

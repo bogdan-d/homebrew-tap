@@ -37,10 +37,9 @@ cask "zed-linux" do
     EOS
   end
 
-  # ! NO zapping !
-  # zap trash: [
-  #   "~/.config/zed",
-  #   "~/.local/share/zed",
-  #   "~/.cache/zed",
-  # ]
+  zap trash: [
+    "~/.cache/zed",
+    "~/.config/zed",
+    "~/.local/share/zed",
+  ]
 end

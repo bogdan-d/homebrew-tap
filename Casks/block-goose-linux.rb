@@ -83,10 +83,8 @@ cask "block-goose-linux" do
     EOS
   end
 
-  zap trash: "~/.cache/goose"
-  # zap trash: [
-  #   "~/.cache/goose",
-  #   "~/.config/goose",
-  #   "~/.local/share/goose",
-  # ]
+  zap trash: [
+    "~/.config/Goose",
+    "~/.local/share/Goose",
+  ]
 end
