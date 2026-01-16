@@ -28,6 +28,9 @@ jobs:
         run: |
           brew bump --tap ${{ github.repository }} --open-pr --no-fork
 
+      - name: Wait for PRs to be indexed
+        run: sleep 20
+
       - name: Enable auto-merge on created PRs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
