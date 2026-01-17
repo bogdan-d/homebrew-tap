@@ -53,6 +53,8 @@ Checks & automation
 
  - For a manual GitHub Action bump (no local environment), trigger `Multi-Arch Cask Bump` workflow with the appropriate inputs.
 
+ - **Auto-merge note:** The scheduled `brew bump` workflow may attempt to enable auto-merge on PRs it creates. To allow this, enable **Allow auto-merge** in the repository Settings and ensure branch protection rules permit auto-merge on the target branch. If not enabled, the workflow will log a warning and continue.
+
 Contributing
 - Open a PR with a clear description and check CI output. Small, focused PRs are preferred (one cask per PR when possible).
 - If a cask is experimental or preview, prefer `version :latest` and `sha256 :no_check`, but document the reasoning.
