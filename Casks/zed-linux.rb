@@ -5,6 +5,10 @@ cask "zed-linux" do
   version :latest
   sha256 :no_check
 
+  livecheck do
+    skip "Uses version :latest"
+  end
+
   url "https://zed.dev/api/releases/stable/latest/zed-linux-#{arch}.tar.gz"
   name "Zed"
   name "Zed Editor"

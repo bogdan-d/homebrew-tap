@@ -2,6 +2,10 @@ cask "rancher-desktop-linux" do
   version :latest
   sha256 :no_check
 
+  livecheck do
+    skip "Uses version :latest"
+  end
+
   url "https://download.opensuse.org/repositories/isv:/Rancher:/stable/AppImage/rancher-desktop-latest-x86_64.AppImage"
   name "Rancher Desktop"
   desc "Container management and Kubernetes on the desktop"

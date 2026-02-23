@@ -5,18 +5,15 @@ cask "visual-studio-code-insiders-linux" do
   version :latest
   sha256 :no_check
 
+  livecheck do
+    skip "Uses version :latest"
+  end
+
   url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/insider"
   name "Microsoft Visual Studio Code - Insiders"
   name "VS Code Insiders"
   desc "Insiders build of the VS Code editor"
   homepage "https://code.visualstudio.com/insiders/"
-
-  # livecheck do
-  #   url "https://update.code.visualstudio.com/api/update/#{os}-#{arch}/insider/latest"
-  #   strategy :json do |json|
-  #     json["productVersion"]
-  #   end
-  # end
 
   binary "VSCode-linux-#{arch}/bin/code-insiders"
   binary "VSCode-linux-#{arch}/bin/code-tunnel-insiders"
