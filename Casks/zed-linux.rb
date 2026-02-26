@@ -5,15 +5,15 @@ cask "zed-linux" do
   version :latest
   sha256 :no_check
 
-  livecheck do
-    skip "Uses version :latest"
-  end
-
   url "https://zed.dev/api/releases/stable/latest/zed-linux-#{arch}.tar.gz"
   name "Zed"
   name "Zed Editor"
   desc "High-performance, multiplayer code editor"
   homepage "https://zed.dev/"
+
+  livecheck do
+    skip "Uses version :latest"
+  end
 
   # Zed publishes .desktop inside the tarball, but we generate one to match our bin path
   binary "zed.app/bin/zed"
