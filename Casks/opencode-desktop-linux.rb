@@ -1,11 +1,8 @@
 cask "opencode-desktop-linux" do
-  arch intel: "x86_64"
-  os linux: "linux"
-
   version "1.14.33"
-  sha256 x86_64_linux: "28171171c4fa5e42febfc649dc404cbbe0e96a05a758182f5b89a3dc96144a18"
+  sha256 "28171171c4fa5e42febfc649dc404cbbe0e96a05a758182f5b89a3dc96144a18"
 
-  url "https://github.com/anomalyco/opencode/releases/download/v#{version}/opencode-desktop-linux-#{arch}.rpm",
+  url "https://github.com/anomalyco/opencode/releases/download/v#{version}/opencode-desktop-linux-x86_64.rpm",
       verified: "github.com/anomalyco/opencode/"
   name "OpenCode"
   desc "Open source AI coding agent desktop client"
@@ -18,7 +15,6 @@ cask "opencode-desktop-linux" do
     end
   end
 
-  depends_on arch: :intel
   depends_on formula: "gtk+3"
   depends_on formula: "webkitgtk"
   depends_on formula: "rpm2cpio"
@@ -38,7 +34,7 @@ cask "opencode-desktop-linux" do
   preflight do
     rpm2cpio = Formula["rpm2cpio"].bin/"rpm2cpio"
     cpio = Formula["cpio"].bin/"cpio"
-    system "sh", "-c", "'#{rpm2cpio}' '#{staged_path}/opencode-desktop-linux-#{arch}.rpm' | '#{cpio}' -idm --quiet",
+    system "sh", "-c", "'#{rpm2cpio}' '#{staged_path}/opencode-desktop-linux-x86_64.rpm' | '#{cpio}' -idm --quiet",
            chdir: staged_path
 
     desktop_file = "#{staged_path}/usr/share/applications/OpenCode.desktop"
