@@ -17,6 +17,12 @@ class RocmSmiLib < Formula
   depends_on :linux
 
   def install
+    # Fedora-family systems keep glibc startup objects in lib64 paths, while
+    # Homebrew GCC may only probe /lib and /usr/lib during CMake's compiler
+    # sanity check.
+    lib64_paths = ["/usr/lib64", "/lib64"].select { |path| Dir.exist?(path) }
+    ENV["LIBRARY_PATH"] = [*lib64_paths, ENV["LIBRARY_PATH"]].compact.join(":") unless lib64_paths.empty?
+
     # Pass explicit version numbers so cmake doesn't need git to detect them.
     # Produces librocm_smi64.so -> librocm_smi64.so.1 -> librocm_smi64.so.1.0
     system "cmake", "-S", ".", "-B", "build",
