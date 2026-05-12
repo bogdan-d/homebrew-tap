@@ -1,5 +1,6 @@
 cask "antigravity-linux" do
   arch arm: "arm", intel: "x64"
+  os linux: "linux"
 
   version "1.23.2-4781536860569600"
 

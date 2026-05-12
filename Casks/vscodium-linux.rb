@@ -1,5 +1,6 @@
 cask "vscodium-linux" do
   arch arm: "arm64", intel: "x64"
+  os linux: "linux"
 
   version "1.116.02821"
 

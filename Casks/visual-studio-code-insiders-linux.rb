@@ -1,5 +1,6 @@
 cask "visual-studio-code-insiders-linux" do
   arch arm: "arm64", intel: "x64"
+  os linux: "linux"
 
   version :latest
   sha256 :no_check

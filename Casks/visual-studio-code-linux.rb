@@ -1,5 +1,6 @@
 cask "visual-studio-code-linux" do
   arch arm: "arm64", intel: "x64"
+  os linux: "linux"
 
   version "1.119.0"
 
