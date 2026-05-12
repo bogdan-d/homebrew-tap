@@ -32,7 +32,32 @@ jobs:
 
       - run: brew test-bot --only-setup
 
-      - run: brew test-bot --only-tap-syntax
+      - name: Run Linux tap syntax checks
+        run: |
+          set -euo pipefail
+
+          # `brew test-bot --only-tap-syntax` hardcodes `brew readall --os=all --arch=all`
+          # which loads casks under macOS before Linux validation. That breaks Linux-only
+          # casks that use top-level `x86_64_linux`/`arm64_linux` sha256 stanzas needed by
+          # the bump workflow, so validate this tap explicitly in Linux mode instead.
+          TAP_FULL_NAME="${GITHUB_REPOSITORY}"
+          TAP_NAME="$(brew ruby -e 'require "tap"; puts Tap.fetch(ARGV.first).name' "$TAP_FULL_NAME")"
+
+          brew style "$TAP_NAME"
+
+          mapfile -t formulae < <(
+            brew ruby -e 'require "tap"; tap = Tap.fetch(ARGV.first); puts tap.formula_files.map { |f| "#{tap.name}/#{f.basename(".rb")}" }' "$TAP_FULL_NAME"
+          )
+          if [ "${#formulae[@]}" -gt 0 ]; then
+            brew audit --os=linux --arch=all --formula --except=installed "${formulae[@]}"
+          fi
+
+          mapfile -t casks < <(
+            brew ruby -e 'require "tap"; tap = Tap.fetch(ARGV.first); puts tap.cask_files.map { |f| "#{tap.name}/#{f.basename(".rb")}" }' "$TAP_FULL_NAME"
+          )
+          for cask in "${casks[@]}"; do
+            brew audit --os=linux --arch=all --cask "$cask"
+          done
 
   test-bot:
     if: github.event_name == 'pull_request'
