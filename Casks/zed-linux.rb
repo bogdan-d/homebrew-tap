@@ -15,6 +15,8 @@ cask "zed-linux" do
     skip "Uses version :latest"
   end
 
+  depends_on :linux
+
   # Zed publishes .desktop inside the tarball, but we generate one to match our bin path
   binary "zed.app/bin/zed"
   artifact "zed.app/share/icons/hicolor/512x512/apps/zed.png",

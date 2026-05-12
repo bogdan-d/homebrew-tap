@@ -15,6 +15,8 @@ cask "visual-studio-code-insiders-linux" do
     skip "Uses version :latest"
   end
 
+  depends_on :linux
+
   binary "VSCode-linux-#{arch}/bin/code-insiders"
   binary "VSCode-linux-#{arch}/bin/code-tunnel-insiders"
   bash_completion "#{staged_path}/VSCode-linux-#{arch}/resources/completions/bash/code-insiders"

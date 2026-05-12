@@ -1,4 +1,6 @@
 cask "rancher-desktop-linux" do
+  os linux: "linux"
+
   version :latest
   sha256 :no_check
 
@@ -12,6 +14,8 @@ cask "rancher-desktop-linux" do
   end
 
   auto_updates true
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "squashfs"
 
   binary "squashfs-root/AppRun", target: "rancher-desktop"

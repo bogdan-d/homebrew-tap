@@ -1,4 +1,6 @@
 cask "fw-fanctrl-linux" do
+  os linux: "linux"
+
   version "1.0.4,1"
   sha256 "1eaf2e48cc39a3e98f978c0ce8efb472d26ffb0277d5f29c8e614705e01beee7"
 
@@ -21,6 +23,9 @@ cask "fw-fanctrl-linux" do
       end.max
     end
   end
+
+  depends_on :linux
+  depends_on arch: :x86_64
 
   binary "#{release_root}/usr/bin/fw-fanctrl"
   binary "#{release_root}/usr/bin/ectool"

@@ -1,4 +1,6 @@
 cask "opencode-desktop-linux" do
+  os linux: "linux"
+
   version "1.14.48"
   sha256 "3d204fd072c71519ad6091a7671927519ee19aa6caf68f420c9d1ca482497795"
 
@@ -15,6 +17,8 @@ cask "opencode-desktop-linux" do
     end
   end
 
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "gtk+3"
   depends_on formula: "webkitgtk"
   depends_on formula: "rpm2cpio"

@@ -1,4 +1,6 @@
 cask "lm-studio-linux" do
+  os linux: "linux"
+
   version "0.4.12-1"
   sha256 "53b4c990c52a98be1693bef3708376ff8205cfb6abb6f560d2c691123a06cbc2"
 
@@ -18,6 +20,8 @@ cask "lm-studio-linux" do
     end
   end
 
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "squashfs"
 
   binary "squashfs-root/AppRun", target: "lm-studio"

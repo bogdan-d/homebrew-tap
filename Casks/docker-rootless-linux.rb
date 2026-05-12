@@ -1,8 +1,9 @@
 cask "docker-rootless-linux" do
   arch intel: "x86_64"
+  os linux: "linux"
 
   version "29.1.3"
-  sha256 intel: "a9a19e20dd09c61ec1af7d67d9dec2455004d0fbd35120fe1d24588c123f9474"
+  sha256 "a9a19e20dd09c61ec1af7d67d9dec2455004d0fbd35120fe1d24588c123f9474"
 
   url "https://download.docker.com/linux/static/stable/#{arch}/docker-#{version}.tgz"
   name "Docker Rootless"
@@ -14,6 +15,8 @@ cask "docker-rootless-linux" do
     regex(/href=.*?docker[._-]v?(\d+(?:\.\d+)+)\.tgz/i)
   end
 
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "slirp4netns"
   depends_on formula: "fuse-overlayfs"
   depends_on formula: "iproute2"

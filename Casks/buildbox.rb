@@ -1,4 +1,7 @@
 cask "buildbox" do
+  arch intel: "x86_64"
+  os linux: "linux"
+
   version "1.3.52"
   sha256 "88fabb10a5c4b8ba4d7614cbca46427533fda82e49237a920f61fd4d32edb7ff"
 
@@ -11,6 +14,9 @@ cask "buildbox" do
     url "https://gitlab.com/BuildGrid/buildbox/buildbox-integration/-/releases"
     regex(/href=.*?buildbox[._-]v?(\d+(?:\.\d+)+)\.tgz/i)
   end
+
+  depends_on :linux
+  depends_on arch: :x86_64
 
   # Binaries from the tgz
   binary "buildbox-casd"

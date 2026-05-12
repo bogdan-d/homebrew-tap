@@ -1,4 +1,6 @@
 cask "goose-linux" do
+  os linux: "linux"
+
   version "1.33.1"
   sha256 "e7bd1c42f514c3dd11f91f0098ac3f76254feac8ef0e805d1b159bd4037e10b8"
 
@@ -25,6 +27,8 @@ cask "goose-linux" do
     end
   end
 
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "libarchive"
 
   binary "Goose/Goose", target: "goose-desktop"

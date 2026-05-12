@@ -1,4 +1,6 @@
 cask "dockerd-linux" do
+  os linux: "linux"
+
   version "29.4.3"
   sha256 "bc9734a89d3edd15eeca8620961f6499ba69948814c85d7ac3488e34b3e16d01"
 
@@ -12,6 +14,8 @@ cask "dockerd-linux" do
     regex(/href=.*?docker[._-]v?(\d+(?:\.\d+)+)\.tgz/i)
   end
 
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "slirp4netns"
   depends_on formula: "fuse-overlayfs"
   depends_on formula: "iproute2"

@@ -1,4 +1,6 @@
 cask "craft-agents-linux" do
+  os linux: "linux"
+
   version "0.9.3"
   sha256 "0d21e6ba8cd52923698b32c3411f058be9d1d047f43ddd51a1aa6f640f963267"
 
@@ -12,6 +14,8 @@ cask "craft-agents-linux" do
     strategy :github_latest
   end
 
+  depends_on :linux
+  depends_on arch: :x86_64
   depends_on formula: "squashfs"
 
   binary "squashfs-root/@craft-agentelectron", target: "craft-agents"

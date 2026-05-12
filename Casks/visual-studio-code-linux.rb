@@ -3,11 +3,8 @@ cask "visual-studio-code-linux" do
   os linux: "linux"
 
   version "1.119.0"
-
-  on_linux do
-    sha256 arm64_linux:  "a34255d5573abad4e62641fdb934b2941b183379807e20c88308372d438159bd",
-           x86_64_linux: "1dc648446074cbc53986ec5737d8cdae1303d098e69fe40d514eb410719db97a"
-  end
+  sha256 arm64_linux:  "a34255d5573abad4e62641fdb934b2941b183379807e20c88308372d438159bd",
+         x86_64_linux: "1dc648446074cbc53986ec5737d8cdae1303d098e69fe40d514eb410719db97a"
 
   url "https://update.code.visualstudio.com/#{version}/linux-#{arch}/stable"
   name "Microsoft Visual Studio Code"
@@ -21,6 +18,8 @@ cask "visual-studio-code-linux" do
       json["productVersion"]
     end
   end
+
+  depends_on :linux
 
   binary "VSCode-linux-#{arch}/bin/code"
   binary "VSCode-linux-#{arch}/bin/code-tunnel"
