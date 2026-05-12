@@ -1,6 +1,5 @@
 cask "antigravity-linux" do
   arch arm: "arm", intel: "x64"
-  os linux: "linux"
 
   version "1.23.2-4781536860569600"
 
@@ -9,14 +8,14 @@ cask "antigravity-linux" do
            x86_64_linux: "5232a4048ff4fa15685d9a981ba4fba573e297f3efc9b76f638e794baf775725"
   end
 
-  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/#{os}-#{arch}/Antigravity.tar.gz",
+  url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/linux-#{arch}/Antigravity.tar.gz",
       verified: "edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/"
   name "Google Antigravity"
   desc "AI Coding Agent IDE"
   homepage "https://antigravity.google/"
 
   livecheck do
-    url "https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-x64/stable/latest"
+    url "https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-#{arch}/stable/latest"
     regex(%r{/stable/([^/]+)/}i)
     strategy :json do |json, regex|
       match = json["url"]&.match(regex)

@@ -1,11 +1,10 @@
 cask "visual-studio-code-insiders-linux" do
   arch arm: "arm64", intel: "x64"
-  os linux: "linux"
 
   version :latest
   sha256 :no_check
 
-  url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/insider"
+  url "https://update.code.visualstudio.com/latest/linux-#{arch}/insider"
   name "Microsoft Visual Studio Code - Insiders"
   name "VS Code Insiders"
   desc "Insiders build of the VS Code editor"
