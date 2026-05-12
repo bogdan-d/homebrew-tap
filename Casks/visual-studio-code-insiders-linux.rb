@@ -38,7 +38,7 @@ cask "visual-studio-code-insiders-linux" do
       Icon=#{Dir.home}/.local/share/icons/vscode-insiders.png
       Type=Application
       StartupNotify=false
-      StartupWMClass=code-insiders
+      StartupWMClass=Code - Insiders
       Categories=TextEditor;Development;IDE;
       MimeType=inode/directory;application/octet-stream;text/plain;text/x-python;text/x-shellscript;text/x-c++;text/x-java;text/x-ruby;text/x-php;text/x-perl;text/x-go;text/x-javascript;application/x-sh;application/json;application/xml;application/x-code-workspace;
       Actions=new-empty-window;
@@ -60,7 +60,7 @@ cask "visual-studio-code-insiders-linux" do
       NoDisplay=true
       StartupNotify=true
       Categories=Utility;TextEditor;Development;IDE;
-      MimeType=x-scheme-handler/vscode;
+      MimeType=x-scheme-handler/vscode-insiders;
       Keywords=vscode;insiders;
     EOS
   end

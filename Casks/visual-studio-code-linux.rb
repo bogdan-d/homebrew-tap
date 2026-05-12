@@ -3,10 +3,13 @@ cask "visual-studio-code-linux" do
   os linux: "linux"
 
   version "1.119.0"
-  sha256 arm64_linux:  "a34255d5573abad4e62641fdb934b2941b183379807e20c88308372d438159bd",
-         x86_64_linux: "1dc648446074cbc53986ec5737d8cdae1303d098e69fe40d514eb410719db97a"
 
-  url "https://update.code.visualstudio.com/latest/#{os}-#{arch}/stable"
+  on_linux do
+    sha256 arm64_linux:  "a34255d5573abad4e62641fdb934b2941b183379807e20c88308372d438159bd",
+           x86_64_linux: "1dc648446074cbc53986ec5737d8cdae1303d098e69fe40d514eb410719db97a"
+  end
+
+  url "https://update.code.visualstudio.com/#{version}/#{os}-#{arch}/stable"
   name "Microsoft Visual Studio Code"
   name "VS Code"
   desc "Open-source code editor"
@@ -32,7 +35,6 @@ cask "visual-studio-code-linux" do
 
   preflight do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-
     File.write("#{staged_path}/VSCode-linux-#{arch}/code.desktop", <<~EOS)
       [Desktop Entry]
       Name=Visual Studio Code

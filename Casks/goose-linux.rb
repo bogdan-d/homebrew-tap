@@ -62,12 +62,12 @@ cask "goose-linux" do
       Comment=Open source, extensible AI agent that goes beyond code suggestions
       Exec=#{HOMEBREW_PREFIX}/bin/goose-desktop %U
       Icon=#{Dir.home}/.local/share/icons/Goose.png
+      Terminal=false
       Type=Application
-      Categories=Development;Utility;
+      Categories=Development;
       MimeType=x-scheme-handler/goose;
       StartupWMClass=Goose
       Keywords=goose;
-      Terminal=false
     EOS
   end
 

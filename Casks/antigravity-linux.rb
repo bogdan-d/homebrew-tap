@@ -3,13 +3,16 @@ cask "antigravity-linux" do
   os linux: "linux"
 
   version "1.23.2-4781536860569600"
-  sha256 arm64_linux:  "64d11085f17edc691adbe8952d59887f257d58448705dc2a19dfa23890d36df1",
-         x86_64_linux: "5232a4048ff4fa15685d9a981ba4fba573e297f3efc9b76f638e794baf775725"
+
+  on_linux do
+    sha256 arm64_linux:  "64d11085f17edc691adbe8952d59887f257d58448705dc2a19dfa23890d36df1",
+           x86_64_linux: "5232a4048ff4fa15685d9a981ba4fba573e297f3efc9b76f638e794baf775725"
+  end
 
   url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version}/#{os}-#{arch}/Antigravity.tar.gz",
       verified: "edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/"
   name "Google Antigravity"
-  desc "Google Antigravity - Experience liftoff"
+  desc "AI Coding Agent IDE"
   homepage "https://antigravity.google/"
 
   livecheck do
@@ -24,6 +27,7 @@ cask "antigravity-linux" do
   end
 
   binary "#{staged_path}/Antigravity/bin/antigravity"
+  binary "#{staged_path}/Antigravity/bin/antigravity", target: "agy"
   bash_completion "#{staged_path}/Antigravity/resources/completions/bash/antigravity"
   zsh_completion  "#{staged_path}/Antigravity/resources/completions/zsh/_antigravity"
   artifact "Antigravity/antigravity.desktop",
@@ -59,19 +63,22 @@ cask "antigravity-linux" do
 
       [Desktop Action new-empty-window]
       Name=New Empty Window
-      Exec=#{HOMEBREW_PREFIX}/bin/antigravity --new-window %F
+      Exec="#{HOMEBREW_PREFIX}/bin/antigravity" --new-window %F
       Icon=#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity.png
     EOS
+
     File.write("#{staged_path}/Antigravity/antigravity-url-handler.desktop", <<~EOS)
       [Desktop Entry]
       Name=Antigravity - URL Handler
-      Comment=Experience liftoff
+      Comment=AI Coding Agent IDE
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/antigravity --open-url %U
+      Exec="#{HOMEBREW_PREFIX}/bin/antigravity" --open-url "%U"
       Icon=#{Dir.home}/.local/share/icons/antigravity.png
       Type=Application
       NoDisplay=true
+      Terminal=false
       StartupNotify=true
+      StartupWMClass=antigravity
       Categories=Utility;TextEditor;Development;IDE;
       MimeType=x-scheme-handler/antigravity;
       Keywords=vscode;antigravity;
@@ -84,6 +91,13 @@ cask "antigravity-linux" do
   zap trash: [
     "~/.antigravity",
     "~/.config/Antigravity",
+    "~/.config/antigravity",
     "~/.gemini",
   ]
+
+  caveats <<~EOS
+    If authentication fails or the browser doesn't open Antigravity, try running:
+      xdg-mime default antigravity-url-handler.desktop x-scheme-handler/antigravity
+      update-desktop-database ~/.local/share/applications
+  EOS
 end
