@@ -14,12 +14,28 @@ jobs:
 
     steps:
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@main
-        with:
-          core: true
+        uses: Homebrew/actions/setup-homebrew@225e0592b0c9d7d41530f7080ba12b5c643ae2e5 # main
 
       - name: Configure git
-        uses: Homebrew/actions/git-user-config@main
+        uses: Homebrew/actions/git-user-config@225e0592b0c9d7d41530f7080ba12b5c643ae2e5 # main
+
+      - name: Checkout homebrew-core
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: Homebrew/homebrew-core
+          path: homebrew-core
+          fetch-depth: 1
+          sparse-checkout: |
+            Formula/
+
+      - name: Move homebrew-core to tap directory
+        run: |
+          BREW_REPO="$(brew --repo)"
+          CORE_TAP="$BREW_REPO/Library/Taps/homebrew/homebrew-core"
+
+          mkdir -p "$(dirname "$CORE_TAP")"
+          rm -rf "$CORE_TAP"
+          mv homebrew-core "$CORE_TAP"
 
       - name: Bump packages
         env:
