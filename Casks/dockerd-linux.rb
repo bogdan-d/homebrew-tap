@@ -1,8 +1,8 @@
 cask "dockerd-linux" do
   os linux: "linux"
 
-  version "29.4.3"
-  sha256 "bc9734a89d3edd15eeca8620961f6499ba69948814c85d7ac3488e34b3e16d01"
+  version "29.5.0"
+  sha256 "ec7f44cd54edf68a06f0da8b507b9e0aa82b64347c4a5a6becde2e4dc6cb212c"
 
   url "https://download.docker.com/linux/static/stable/x86_64/docker-#{version}.tgz"
   name "Dockerd"
