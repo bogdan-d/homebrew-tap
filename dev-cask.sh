@@ -146,8 +146,8 @@ case "${COMMAND}" in
   bump)
     BREW_ARGS=()
     [[ "${VERBOSE}" == "true" ]] && BREW_ARGS+=(--verbose)
-    BREW_ARGS+=(--tap "${TAP_NAME}" --no-fork --cask)
-    brew bump "${BREW_ARGS[@]}" "${CASK_NAME}" "$@"
+    BREW_ARGS+=(--no-fork --cask)
+    brew bump "${BREW_ARGS[@]}" "${FULL_CASK_NAME}" "$@"
     ;;
   *)
     echo "Unknown command: ${COMMAND}"
