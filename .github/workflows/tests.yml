@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@225e0592b0c9d7d41530f7080ba12b5c643ae2e5 # main
+        uses: Homebrew/actions/setup-homebrew@6eaeff80e7e5c43087c0e5eb5aa82120399e9c91 # main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -28,42 +28,20 @@ jobs:
           key: ubuntu-24.04-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ubuntu-24.04-rubygems-
 
+      - name: Install Bubblewrap
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
+
       - run: brew test-bot --only-cleanup-before
 
       - run: brew test-bot --only-setup
 
-      - name: Run Linux tap syntax checks
-        run: |
-          set -euo pipefail
-
-          # `brew test-bot --only-tap-syntax` hardcodes `brew readall --os=all --arch=all`
-          # which loads casks under macOS before Linux validation. That breaks Linux-only
-          # casks that use top-level `x86_64_linux`/`arm64_linux` sha256 stanzas needed by
-          # the bump workflow, so validate this tap explicitly in Linux mode instead.
-          TAP_FULL_NAME="${GITHUB_REPOSITORY}"
-          TAP_NAME="$(brew ruby -e 'require "tap"; puts Tap.fetch(ARGV.first).name' "$TAP_FULL_NAME")"
-
-          brew style "$TAP_NAME"
-
-          mapfile -t formulae < <(
-            brew ruby -e 'require "tap"; tap = Tap.fetch(ARGV.first); puts tap.formula_files.map { |f| "#{tap.name}/#{f.basename(".rb")}" }' "$TAP_FULL_NAME"
-          )
-          if [ "${#formulae[@]}" -gt 0 ]; then
-            brew audit --os=linux --arch=all --formula --except=installed "${formulae[@]}"
-          fi
-
-          mapfile -t casks < <(
-            brew ruby -e 'require "tap"; tap = Tap.fetch(ARGV.first); puts tap.cask_files.map { |f| "#{tap.name}/#{f.basename(".rb")}" }' "$TAP_FULL_NAME"
-          )
-          for cask in "${casks[@]}"; do
-            brew audit --os=linux --arch=all --cask "$cask"
-          done
+      - run: brew test-bot --only-tap-syntax
 
   test-bot:
     if: github.event_name == 'pull_request'
     strategy:
       matrix:
-        os: [ ubuntu-24.04 ]
+        os: [ ubuntu-24.04, macos-15 ]
     runs-on: ${{ matrix.os }}
     permissions:
       actions: read
@@ -73,7 +51,7 @@ jobs:
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@225e0592b0c9d7d41530f7080ba12b5c643ae2e5 # main
+        uses: Homebrew/actions/setup-homebrew@6eaeff80e7e5c43087c0e5eb5aa82120399e9c91 # main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -83,6 +61,10 @@ jobs:
           path: ${{ steps.set-up-homebrew.outputs.gems-path }}
           key: ${{ matrix.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ matrix.os }}-rubygems-
+
+      - name: Install Bubblewrap
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
 
       - run: brew test-bot --only-cleanup-before
 
