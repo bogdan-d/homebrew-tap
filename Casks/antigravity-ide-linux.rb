@@ -4,8 +4,8 @@ cask "antigravity-ide-linux" do
   os linux: "linux"
 
   version "2.0.4,6381998290370560"
-  sha256 arm64_linux:  "30435204d14cdcd479b37fd9ae077425d7ab7bb90f99af2bc41638205e02fb37",
-         x86_64_linux: "66337d45f2472ce5e89f394e77aec74909aa1be0bb33c9f73299a95f458e6770"
+  sha256 arm:   "30435204d14cdcd479b37fd9ae077425d7ab7bb90f99af2bc41638205e02fb37",
+         intel: "66337d45f2472ce5e89f394e77aec74909aa1be0bb33c9f73299a95f458e6770"
 
   url "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/#{version.csv.first}-#{version.csv.second}/linux-#{arch}/Antigravity%20IDE.tar.gz",
       verified: "edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/"
@@ -23,6 +23,8 @@ cask "antigravity-ide-linux" do
       match[1]&.tr("-", ",").to_s
     end
   end
+
+  depends_on :linux
 
   binary "#{staged_path}/Antigravity IDE/bin/antigravity-ide"
   binary "#{staged_path}/Antigravity IDE/bin/antigravity-ide", target: "agy-ide"

@@ -170,13 +170,13 @@ then
   do
     jq_args+=(--arg "sha_${a}" "${SHAS[${a}]}")
   done
-  jq "${jq_args[@]}" -n '($ARGS.named | to_entries | reduce .[] as $i ({}; .[$i.key] = $i.value)) as $named | {version: $named.version, sha256: {x86_64_linux: $named.sha_x64, arm64_linux: $named.sha_arm64}}'
+  jq "${jq_args[@]}" -n '($ARGS.named | to_entries | reduce .[] as $i ({}; .[$i.key] = $i.value)) as $named | {version: $named.version, sha256: {intel: $named.sha_x64, arm: $named.sha_arm64}}'
   exit 0
 fi
 
 echo "version \"${VERSION}\""
-echo "sha256 arm64_linux:  \"${SHAS[arm64]}\","
-echo "       x86_64_linux: \"${SHAS[x64]}\""
+echo "sha256 arm:   \"${SHAS[arm64]}\","
+echo "       intel: \"${SHAS[x64]}\""
 
 diff_applied=false
 if [[ -n "${CASK_FILE_UPDATE}" ]]
@@ -190,11 +190,11 @@ then
   awk -v ver="${VERSION}" -v sha_arm64="${SHAS[arm64]}" -v sha_x64="${SHAS[x64]}" -v dry="${DRY_RUN}" '
     BEGIN { replaced_v=0; replaced_s=0 }
     /^(\s*)version\s+"/ { sub(/version ".*"/, "version \"" ver "\""); replaced_v=1 }
-    /^(\s*)sha256 arm64_linux:/ {
+    /^(\s*)sha256 arm:/ {
       if (!dry) {
-         print "  sha256 arm64_linux:  \"" sha_arm64 "\",";
-         getline; # consume x86_64 line
-         print "         x86_64_linux: \"" sha_x64 "\"";
+         print "  sha256 arm:   \"" sha_arm64 "\",";
+         getline; # consume intel line
+         print "         intel: \"" sha_x64 "\"";
          } else {
          print; getline; print;
          }
