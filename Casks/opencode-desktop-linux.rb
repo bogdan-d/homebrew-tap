@@ -1,8 +1,8 @@
 cask "opencode-desktop-linux" do
   os linux: "linux"
 
-  version "1.16.2"
-  sha256 "b2b6a6c9665b419679ff257efdc9dc333f6558215612d54f8106e90ee4e96067"
+  version "1.17.3"
+  sha256 "cf5587a2b919a7b8e071f5e898a2978a8b04963380b8325786bf5197495c7cbb"
 
   url "https://github.com/anomalyco/opencode/releases/download/v#{version}/opencode-desktop-linux-x86_64.rpm",
       verified: "github.com/anomalyco/opencode/"
