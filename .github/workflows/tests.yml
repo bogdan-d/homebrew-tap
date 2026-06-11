@@ -31,6 +31,14 @@ jobs:
       - name: Install Bubblewrap
         run: sudo apt-get update && sudo apt-get install -y bubblewrap
 
+      - name: Enable unprivileged user namespaces
+        run: |
+          sudo sysctl -w kernel.unprivileged_userns_clone=1 2>/dev/null || true
+          sudo sysctl -w user.max_user_namespaces=28633 2>/dev/null || true
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 2>/dev/null || true
+
+      - run: brew trust bogdan-d/tap
+
       - run: brew test-bot --only-cleanup-before
 
       - run: brew test-bot --only-setup
@@ -65,6 +73,15 @@ jobs:
       - name: Install Bubblewrap
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y bubblewrap
+
+      - name: Enable unprivileged user namespaces
+        if: runner.os == 'Linux'
+        run: |
+          sudo sysctl -w kernel.unprivileged_userns_clone=1 2>/dev/null || true
+          sudo sysctl -w user.max_user_namespaces=28633 2>/dev/null || true
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 2>/dev/null || true
+
+      - run: brew trust bogdan-d/tap
 
       - run: brew test-bot --only-cleanup-before
 

@@ -37,6 +37,8 @@ jobs:
           rm -rf "$CORE_TAP"
           mv homebrew-core "$CORE_TAP"
 
+      - run: brew trust bogdan-d/tap
+
       - name: Bump packages
         env:
           HOMEBREW_DEVELOPER: 1
