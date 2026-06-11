@@ -170,12 +170,13 @@ then
   do
     jq_args+=(--arg "sha_${a}" "${SHAS[${a}]}")
   done
-  jq "${jq_args[@]}" -n '($ARGS.named | to_entries | reduce .[] as $i ({}; .[$i.key] = $i.value)) as $named | {version: $named.version, sha256: {intel: "no_check", arm: "no_check", x86_64_linux: $named.sha_x64, arm64_linux: $named.sha_arm64}}'
+  jq "${jq_args[@]}" -n '($ARGS.named | to_entries | reduce .[] as $i ({}; .[$i.key] = $i.value)) as $named | {version: $named.version, sha256: {arm: $named.sha_arm64, intel: $named.sha_x64, arm64_linux: $named.sha_arm64, x86_64_linux: $named.sha_x64}}'
   exit 0
 fi
 
 echo "version \"${VERSION}\""
-echo "sha256 arm: :no_check, intel: :no_check,"
+echo "sha256 arm:          \"${SHAS[arm64]}\","
+echo "       intel:        \"${SHAS[x64]}\","
 echo "       arm64_linux:  \"${SHAS[arm64]}\","
 echo "       x86_64_linux: \"${SHAS[x64]}\""
 
@@ -193,12 +194,13 @@ then
     /^(\s*)version\s+"/ { sub(/version ".*"/, "version \"" ver "\""); replaced_v=1 }
     /^(\s*)sha256 arm:/ {
       if (!dry) {
-         print "  sha256 arm: :no_check, intel: :no_check,";
+         print "  sha256 arm:          \"" sha_arm64 "\",";
+         print "         intel:        \"" sha_x64 "\",";
+         getline; getline; getline; # consume intel, arm64_linux, x86_64_linux lines
          print "         arm64_linux:  \"" sha_arm64 "\",";
-         getline; # consume x86_64_linux line
          print "         x86_64_linux: \"" sha_x64 "\"";
          } else {
-         print; getline; print;
+         print; getline; print; getline; print; getline; print;
          }
          replaced_s=1; next
          }

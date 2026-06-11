@@ -5,7 +5,8 @@ cask "antigravity-cli-linux" do
   os linux: "linux"
 
   version "1.0.6,6458082025406464"
-  sha256 arm: :no_check, intel: :no_check,
+  sha256 arm:          "be6303d4b891a79457ca6ed169aff2efd3ceb694354634e85ef58c883bae6739",
+         intel:        "3eae552781d3054b782142e3cfe7be73e3bd068c736a432ca6f1adaa40f19e07",
          arm64_linux:  "be6303d4b891a79457ca6ed169aff2efd3ceb694354634e85ef58c883bae6739",
          x86_64_linux: "3eae552781d3054b782142e3cfe7be73e3bd068c736a432ca6f1adaa40f19e07"
 
