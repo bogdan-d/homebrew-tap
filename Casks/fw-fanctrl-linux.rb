@@ -1,8 +1,8 @@
 cask "fw-fanctrl-linux" do
   os linux: "linux"
 
-  version "1.0.4,1"
-  sha256 "1eaf2e48cc39a3e98f978c0ce8efb472d26ffb0277d5f29c8e614705e01beee7"
+  version "1.0.4,2"
+  sha256 "d716bf48c72504264a06cd58aa2865d533485a504921f99f9e2587f769606855"
 
   release_tag = "fw-fanctrl-#{version.csv.first}-#{version.csv.second}"
   release_root = "fw-fanctrl-#{version.csv.first}-x86_64"
