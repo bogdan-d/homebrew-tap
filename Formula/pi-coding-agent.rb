@@ -8,7 +8,8 @@ class PiCodingAgent < Formula
   depends_on "node"
 
   def install
-    system "npm", "install", *std_npm_args
+    # Pi publishes lockstep packages, so its dependencies can be less than a day old too.
+    system "npm", "install", *std_npm_args, "--min-release-age=0"
     (bin/"pi").write_env_script libexec/"bin/pi", PI_SKIP_VERSION_CHECK: 1
 
     node_modules = libexec/"lib/node_modules/@earendil-works/pi-coding-agent/node_modules/"
