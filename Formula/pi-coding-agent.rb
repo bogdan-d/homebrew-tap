@@ -5,6 +5,13 @@ class PiCodingAgent < Formula
   sha256 "c010db218d57d561765651bf42ec13adc22736693880b46cf1919b9bfc260ab3"
   license "MIT"
 
+  livecheck do
+    url "https://registry.npmjs.org/@earendil-works/pi-coding-agent/latest"
+    strategy :json do |json|
+      json["version"]
+    end
+  end
+
   depends_on "node"
 
   def install
