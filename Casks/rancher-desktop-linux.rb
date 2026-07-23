@@ -4,7 +4,8 @@ cask "rancher-desktop-linux" do
   version :latest
   sha256 :no_check
 
-  url "https://download.opensuse.org/repositories/isv:/Rancher:/stable/AppImage/rancher-desktop-latest-x86_64.AppImage"
+  url "https://download.opensuse.org/repositories/isv:/Rancher:/stable/AppImage/rancher-desktop-latest-x86_64.AppImage",
+      verified: "download.opensuse.org/repositories/isv:/Rancher:/stable/"
   name "Rancher Desktop"
   desc "Container management and Kubernetes on the desktop"
   homepage "https://rancherdesktop.io/"
@@ -13,7 +14,6 @@ cask "rancher-desktop-linux" do
     skip "Uses version :latest"
   end
 
-  auto_updates true
   depends_on :linux
   depends_on arch: :x86_64
   depends_on formula: "squashfs"
