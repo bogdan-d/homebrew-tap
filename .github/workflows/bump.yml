@@ -95,7 +95,7 @@ jobs:
               --base "${{ github.event.repository.default_branch }}" \
               --head "$branch" \
               --title "$title" \
-              --body 'Created by `brew bump`.'
+              --body "Created by \`brew bump\`."
           done
 
       - name: Wait for PRs to be indexed
