@@ -46,10 +46,57 @@ jobs:
 
       - name: Bump packages
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_DEVELOPER: 1
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          brew bump --tap ${{ github.repository }} --open-pr --no-fork
+          log_file="$(mktemp)"
+          set +e
+          brew bump --tap ${{ github.repository }} --open-pr --no-fork 2>&1 | tee "$log_file"
+          status="${PIPESTATUS[0]}"
+          set -e
+
+          if [[ "$status" -eq 0 ]]; then
+            exit 0
+          fi
+
+          pr_error="Unable to open pull request for ${{ github.repository }}: Failed to parse JSON response"
+          if ! grep -Fq "$pr_error" "$log_file"; then
+            exit "$status"
+          fi
+
+          other_errors="$(grep -F '##[error]' "$log_file" | grep -Fv "$pr_error" || true)"
+          if [[ -n "$other_errors" ]]; then
+            printf '%s\n' "$other_errors" >&2
+            exit "$status"
+          fi
+
+          mapfile -t branches < <(grep -oE 'bump-[[:alnum:]._-]+' "$log_file" | sort -u)
+          if [[ "${#branches[@]}" -eq 0 ]]; then
+            echo "No bump branches found in brew output." >&2
+            exit "$status"
+          fi
+
+          cd "$(brew --repo ${{ github.repository }})"
+
+          for branch in "${branches[@]}"; do
+            if [[ -n "$(gh pr list --head "$branch" --state all --json number --jq '.[0].number // empty')" ]]; then
+              echo "PR already exists for $branch"
+              continue
+            fi
+
+            title="$(git log -1 --format=%s "origin/$branch")"
+            if [[ -z "$title" ]]; then
+              echo "Missing commit title for $branch" >&2
+              exit "$status"
+            fi
+
+            gh pr create \
+              --base "${{ github.event.repository.default_branch }}" \
+              --head "$branch" \
+              --title "$title" \
+              --body 'Created by `brew bump`.'
+          done
 
       - name: Wait for PRs to be indexed
         if: always()
