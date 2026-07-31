@@ -2,8 +2,8 @@ cask "docker-rootless-linux" do
   arch intel: "x86_64"
   os linux: "linux"
 
-  version "29.6.2"
-  sha256 "d6204aea92238e2453d5445c885b9d2e5eb8f82915568ec50edf9dbe12a3ac74"
+  version "29.7.0"
+  sha256 "5812ccd5948835af1522c331ba830e07442d4f31ebb597ff2480ff0a2c74b7bb"
 
   url "https://download.docker.com/linux/static/stable/#{arch}/docker-#{version}.tgz"
   name "Docker Rootless"
