@@ -5,8 +5,7 @@ cask "winboat" do
   version "0.9.2"
   sha256 "aa5a6ae3e28367dce234d146d4866cea02ae840713b65d8d7456eb277a4e8c98"
 
-  url "https://github.com/TibixDev/winboat/releases/download/v#{version}/winboat-#{version}-x64.tar.gz",
-      verified: "github.com/TibixDev/winboat/"
+  url "https://github.com/TibixDev/winboat/releases/download/v#{version}/winboat-#{version}-x64.tar.gz"
   name "Winboat"
   desc "Run Windows apps on Linux with seamless integration"
   homepage "https://www.winboat.app/"

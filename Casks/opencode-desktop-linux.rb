@@ -4,8 +4,7 @@ cask "opencode-desktop-linux" do
   version "1.18.25"
   sha256 "19ab7bf4ca0e06519ca2f4a291e5a3814ad06aa72a66f6442ea79fd1a4d29f52"
 
-  url "https://github.com/anomalyco/opencode/releases/download/v#{version}/opencode-desktop-linux-x86_64.rpm",
-      verified: "github.com/anomalyco/opencode/"
+  url "https://github.com/anomalyco/opencode/releases/download/v#{version}/opencode-desktop-linux-x86_64.rpm"
   name "OpenCode"
   desc "Open source AI coding agent desktop client"
   homepage "https://opencode.ai/"
