@@ -25,7 +25,7 @@ Validation and CI
 - Use `brew bump-cask-pr` to create version bump PRs and ensure `version` and `sha256` are updated together.
 
 Local testing scripts
-- `dev-cask.sh <command> <cask_name> [options]` — Create a temporary local tap (`bogdan-d/local-test`), copy the specified cask into it, and run one of the supported Homebrew commands (`install`, `audit`, `livecheck`, `bump`, `style`, `cleanup`, `untap`). Offers `--keep` to skip cleanup, `--debug` for debug output, and `--verbose` to pass to brew commands. For `install`, defaults to cleanup after unless `--keep` is used.
+- `dev-cask.sh <command> <cask_name> [options]` — Run `install`, `audit`, `livecheck`, or `bump` in a unique scratch tap containing only the requested cask; `style` checks the local file directly. `--keep` prints the owned tap name and exact cleanup command. The helper refuses to replace or remove a cask that was already installed.
 
 Note: The local testing script is meant to be used on a developer machine (it requires Homebrew). It’s helpful for validating local changes without publishing. Always use `--keep` when you need to debug an install by leaving the cask installed and the tap present.
 

@@ -34,8 +34,9 @@ Checks & automation
 ./dev-cask.sh livecheck visual-studio-code-linux
 ./dev-cask.sh bump visual-studio-code-linux
 ./dev-cask.sh install --keep --verbose visual-studio-code-linux
-./dev-cask.sh cleanup --debug --verbose visual-studio-code-linux
 ```
+
+`--keep` prints the unique scratch tap name and the exact cleanup command to run later.
 
 - When updating a cask's version, update both `version` and `sha256`, and create a bump PR using `brew bump-cask-pr` if applicable.
  - For multi-arch updates where upstream provides per-arch JSON metadata, use the helper:
