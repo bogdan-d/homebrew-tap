@@ -12,11 +12,11 @@ fail() {
 }
 
 assert_log() {
-  grep -Eq "$1" "$FAKE_BREW_LOG" || fail "missing log entry: $1"
+  grep -Eq "$1" "${FAKE_BREW_LOG}" || fail "missing log entry: $1"
 }
 
 assert_no_log() {
-  if grep -Eq "$1" "$FAKE_BREW_LOG"
+  if grep -Eq "$1" "${FAKE_BREW_LOG}"
   then
     fail "unexpected log entry: $1"
   fi
@@ -24,25 +24,25 @@ assert_no_log() {
 
 setup_case() {
   local name="$1"
-  CASE_ROOT="$TEST_ROOT/$name"
-  FAKE_BREW_ROOT="$CASE_ROOT/brew"
-  FAKE_BREW_LOG="$CASE_ROOT/brew.log"
-  WORK_ROOT="$CASE_ROOT/work"
-  mkdir -p "$FAKE_BREW_ROOT/taps" "$FAKE_BREW_ROOT/installed" "$FAKE_BREW_ROOT/caskroom" "$WORK_ROOT/Casks"
-  : >"$FAKE_BREW_LOG"
-  printf 'cask "example" do\nend\n' >"$WORK_ROOT/Casks/example.rb"
+  CASE_ROOT="${TEST_ROOT}/${name}"
+  FAKE_BREW_ROOT="${CASE_ROOT}/brew"
+  FAKE_BREW_LOG="${CASE_ROOT}/brew.log"
+  WORK_ROOT="${CASE_ROOT}/work"
+  mkdir -p "${FAKE_BREW_ROOT}/taps" "${FAKE_BREW_ROOT}/installed" "${FAKE_BREW_ROOT}/caskroom" "${WORK_ROOT}/Casks"
+  : >"${FAKE_BREW_LOG}"
+  printf 'cask "example" do\nend\n' >"${WORK_ROOT}/Casks/example.rb"
   export FAKE_BREW_ROOT FAKE_BREW_LOG
 }
 
 run_helper() {
   (
-    cd "$WORK_ROOT"
-    PATH="$TEST_ROOT/bin:$PATH" "$REPO_ROOT/dev-cask.sh" "$@"
+    cd "${WORK_ROOT}"
+    PATH="${TEST_ROOT}/bin:${PATH}" "${REPO_ROOT}/dev-cask.sh" "$@"
   )
 }
 
-mkdir -p "$TEST_ROOT/bin"
-cat >"$TEST_ROOT/bin/brew" <<'EOF'
+mkdir -p "${TEST_ROOT}/bin"
+cat >"${TEST_ROOT}/bin/brew" <<'EOF'
 #!/usr/bin/env bash
 
 set -euo pipefail
@@ -106,7 +106,7 @@ case "$1" in
     ;;
 esac
 EOF
-chmod +x "$TEST_ROOT/bin/brew"
+chmod +x "${TEST_ROOT}/bin/brew"
 
 setup_case style
 run_helper style example --fix
@@ -114,22 +114,22 @@ assert_log '^style[[:space:]]+Casks/example\.rb[[:space:]]+--fix$'
 assert_no_log '^tap-new'
 
 setup_case audit
-touch "$FAKE_BREW_ROOT/installed/unrelated"
+touch "${FAKE_BREW_ROOT}/installed/unrelated"
 run_helper audit example
 assert_log '^tap-new[[:space:]]+--no-git[[:space:]]+bogdan-d/local-test-'
 assert_log '^audit[[:space:]]+--cask[[:space:]]+bogdan-d/local-test-.*/example$'
 assert_log '^untap[[:space:]]+bogdan-d/local-test-'
 assert_no_log '^uninstall'
 assert_no_log '(^|[[:space:]])--force([[:space:]]|$)'
-[[ -f "$FAKE_BREW_ROOT/installed/unrelated" ]] || fail "audit cleanup removed an unrelated cask"
+[[ -f "${FAKE_BREW_ROOT}/installed/unrelated" ]] || fail "audit cleanup removed an unrelated cask"
 
 setup_case installed
-touch "$FAKE_BREW_ROOT/installed/example"
+touch "${FAKE_BREW_ROOT}/installed/example"
 set +e
 run_helper install example
 status=$?
 set -e
-[[ $status -ne 0 ]] || fail "install accepted a pre-existing cask"
+[[ ${status} -ne 0 ]] || fail "install accepted a pre-existing cask"
 assert_no_log '^install'
 assert_no_log '^uninstall'
 assert_log '^untap[[:space:]]+bogdan-d/local-test-'
@@ -141,7 +141,7 @@ run_helper audit example
 status=$?
 set -e
 unset FAKE_AUDIT_FAIL
-[[ $status -eq 42 ]] || fail "failed audit returned $status instead of 42"
+[[ ${status} -eq 42 ]] || fail "failed audit returned ${status} instead of 42"
 assert_log '^untap[[:space:]]+bogdan-d/local-test-'
 assert_no_log '^uninstall'
 
@@ -150,30 +150,30 @@ run_helper install example
 assert_log '^install[[:space:]]+--cask[[:space:]]+bogdan-d/local-test-.*/example$'
 assert_log '^uninstall[[:space:]]+--cask[[:space:]]+bogdan-d/local-test-.*/example$'
 assert_log '^untap[[:space:]]+bogdan-d/local-test-'
-[[ ! -f "$FAKE_BREW_ROOT/installed/example" ]] || fail "test cask remained installed"
+[[ ! -f "${FAKE_BREW_ROOT}/installed/example" ]] || fail "test cask remained installed"
 
 setup_case kept
 output="$(run_helper audit example --keep)"
-tap="$(sed -n 's/^Kept scratch tap \(.*\)\.$/\1/p' <<<"$output")"
-[[ -n "$tap" ]] || fail "kept tap name was not reported"
-run_helper cleanup example --tap "$tap"
-assert_log "^untap[[:space:]]+$tap$"
+tap="$(sed -n 's/^Kept scratch tap \(.*\)\.$/\1/p' <<<"${output}")"
+[[ -n "${tap}" ]] || fail "kept tap name was not reported"
+run_helper cleanup example --tap "${tap}"
+assert_log "^untap[[:space:]]+${tap}$"
 assert_no_log '^uninstall'
 
 setup_case replaced-install
 output="$(run_helper install example --keep)"
-tap="$(sed -n 's/^Kept scratch tap \(.*\)\.$/\1/p' <<<"$output")"
-rm -rf "$FAKE_BREW_ROOT/caskroom/example"
-mkdir -p "$FAKE_BREW_ROOT/caskroom/example/.metadata"
-printf '{"replacement":true}\n' >"$FAKE_BREW_ROOT/caskroom/example/.metadata/INSTALL_RECEIPT.json"
-: >"$FAKE_BREW_LOG"
+tap="$(sed -n 's/^Kept scratch tap \(.*\)\.$/\1/p' <<<"${output}")"
+rm -rf "${FAKE_BREW_ROOT}/caskroom/example"
+mkdir -p "${FAKE_BREW_ROOT}/caskroom/example/.metadata"
+printf '{"replacement":true}\n' >"${FAKE_BREW_ROOT}/caskroom/example/.metadata/INSTALL_RECEIPT.json"
+: >"${FAKE_BREW_LOG}"
 set +e
-run_helper cleanup example --tap "$tap"
+run_helper cleanup example --tap "${tap}"
 status=$?
 set -e
-[[ $status -ne 0 ]] || fail "cleanup removed a replacement installation"
+[[ ${status} -ne 0 ]] || fail "cleanup removed a replacement installation"
 assert_no_log '^uninstall'
 assert_no_log '^untap'
-[[ -f "$FAKE_BREW_ROOT/installed/example" ]] || fail "replacement installation was removed"
+[[ -f "${FAKE_BREW_ROOT}/installed/example" ]] || fail "replacement installation was removed"
 
 echo "dev-cask tests passed"
