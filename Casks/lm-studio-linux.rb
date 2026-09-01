@@ -25,9 +25,9 @@ cask "lm-studio-linux" do
   depends_on formula: "squashfs"
 
   binary "squashfs-root/AppRun", target: "lm-studio"
-  artifact "squashfs-root/usr/share/icons/hicolor/0x0/apps/lm-studio.png",
+  artifact "squashfs-root/usr/share/icons/hicolor/512x512/apps/lm-studio.png",
            target: "#{Dir.home}/.local/share/icons/lm-studio.png"
-  artifact "squashfs-root/lm-studio.desktop",
+  artifact "squashfs-root/ai.elementlabs.lmstudio.desktop",
            target: "#{Dir.home}/.local/share/applications/lm-studio.desktop"
 
   preflight do
@@ -42,9 +42,10 @@ cask "lm-studio-linux" do
     FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
     FileUtils.mkdir_p "#{Dir.home}/.local/share/icons"
 
-    desktop_content = File.read("#{staged_path}/squashfs-root/lm-studio.desktop")
+    desktop_path = "#{staged_path}/squashfs-root/ai.elementlabs.lmstudio.desktop"
+    desktop_content = File.read(desktop_path)
     desktop_content.gsub!(/^Exec=.*/, "Exec=#{HOMEBREW_PREFIX}/bin/lm-studio")
-    File.write("#{staged_path}/squashfs-root/lm-studio.desktop", desktop_content)
+    File.write(desktop_path, desktop_content)
   end
 
   zap trash: "~/.config/LMStudio"
