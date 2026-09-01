@@ -26,7 +26,15 @@ Working with this repo
 - For painting desktop files/icons or replacing Exec paths, prefer `artifact` and `preflight` transformations.
 
 Checks & automation
-- Audit and style-check casks before opening a PR:
+- Run the repository finisher before opening a PR:
+
+```bash
+./scripts/finish.sh
+```
+
+It applies Homebrew's `brew style --fix` formatting (including `shfmt` and ShellCheck), verifies repository style, runs helper tests, and audits changed casks.
+
+- Use focused cask commands while developing:
 
 ```bash
 ./dev-cask.sh style visual-studio-code-linux --fix
@@ -39,22 +47,7 @@ Checks & automation
 `--keep` prints the unique scratch tap name and the exact cleanup command to run later.
 
 - When updating a cask's version, update both `version` and `sha256`, and create a bump PR using `brew bump-cask-pr` if applicable.
- - For multi-arch updates where upstream provides per-arch JSON metadata, use the helper:
-
-```bash
-./scripts/fetch-multi-arch-shas.sh antigravity-linux \
-	--endpoint 'https://antigravity-auto-updater-974169037036.us-central1.run.app/api/update/linux-{arch}/stable/latest' \
-	--arches 'x64 arm64' --update Casks/antigravity-linux.rb --commit
-
-./scripts/fetch-multi-arch-shas.sh visual-studio-code-linux \
-	--endpoint 'https://update.code.visualstudio.com/api/update/linux-{arch}/stable/latest' \
-	--version-json-key productVersion --sha-json-key sha256hash \
-	--arches 'x64 arm64' --update Casks/visual-studio-code-linux.rb --commit
-```
-
- - For a manual GitHub Action bump (no local environment), trigger `Multi-Arch Cask Bump` workflow with the appropriate inputs.
-
- - **Auto-merge note:** The scheduled `brew bump` workflow may attempt to enable auto-merge on PRs it creates. To allow this, enable **Allow auto-merge** in the repository Settings and ensure branch protection rules permit auto-merge on the target branch. If not enabled, the workflow will log a warning and continue.
+- **Auto-merge note:** The scheduled `brew bump` workflow may attempt to enable auto-merge on PRs it creates. To allow this, enable **Allow auto-merge** in the repository Settings and ensure branch protection rules permit auto-merge on the target branch. If not enabled, the workflow will log a warning and continue.
 
 Contributing
 - Open a PR with a clear description and check CI output. Small, focused PRs are preferred (one cask per PR when possible).

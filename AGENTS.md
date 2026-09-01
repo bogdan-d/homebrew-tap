@@ -6,6 +6,7 @@ Repository layout
 - `Casks/` — the Ruby cask files. Each file is a single cask recipe.
 - `WIP/` — work-in-progress files or temporary artifacts for testing and must be ignored.
 - `dev-cask.sh` — local testing and validation helper (see below).
+- `scripts/finish.sh` — required end-of-session formatting and validation command.
 
 Key patterns to follow
 - Follow the Homebrew cask DSL: `cask "name" do ... end`. Include `version`, `sha256`, `url`, `desc`, `homepage` where applicable.
@@ -14,7 +15,14 @@ Key patterns to follow
 - Wallpapers and DE-specific artifacts: handle GNOME, KDE, and other DEs by adapting metadata and XML preprocessing as necessary.
 
 Validation and CI
-- Run local checks before creating PRs:
+- Before finishing any editing session, run:
+
+```bash
+./scripts/finish.sh
+```
+
+- This applies Homebrew's `brew style --fix` formatting, including its `shfmt` and ShellCheck rules, verifies repository style, runs the `dev-cask.sh` tests, and audits changed casks.
+- Use focused commands while developing when useful:
 
 ```bash
 ./dev-cask.sh style <cask_name>
@@ -38,18 +46,5 @@ Agent behavior (rules)
 Useful examples
 - `Casks/visual-studio-code-linux.rb` — multi-arch handling and desktop transformations
 - `Casks/framework-tool.rb` — minimal-binary cask example
-
-Helper scripts
-- `scripts/fetch-multi-arch-shas.sh` — generalized multi-arch helper. Key options:
-	- `--endpoint 'https://.../linux-{arch}/stable/latest'` template with `{arch}` placeholder
-	- `--arches 'x64 arm64'` specify arch set
-	- `--version-json-key productVersion` use JSON field for version (else parsed from URL `/stable/<ver>/`)
-	- `--sha-json-key sha256hash` override sha field name
-	- `--update Casks/<cask>.rb --commit` patch and commit version + both shas
-	- `--json` machine-readable `{version, sha256:{...}}` output
-	- `--dry-run` show what would change without modifying file
-
-GitHub Actions workflow
-- `.github/workflows/multi-arch-bump.yml` — manual dispatch workflow to update a cask using the helper script, run style, and open a PR. Inputs allow overriding endpoint, arches, and JSON keys.
 
 If you need more specifics (example diffs, lint outputs, or a PR template), open a discussion or leave a draft PR and request feedback.
