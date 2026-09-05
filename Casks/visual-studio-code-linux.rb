@@ -27,22 +27,24 @@ cask "visual-studio-code-linux" do
   binary "VSCode-linux-#{arch}/bin/code-tunnel"
   bash_completion "#{staged_path}/VSCode-linux-#{arch}/resources/completions/bash/code"
   zsh_completion  "#{staged_path}/VSCode-linux-#{arch}/resources/completions/zsh/_code"
-  artifact "VSCode-linux-#{arch}/code.desktop",
+  artifact "code.desktop",
            target: "#{Dir.home}/.local/share/applications/code.desktop"
-  artifact "VSCode-linux-#{arch}/code-url-handler.desktop",
+  artifact "code-url-handler.desktop",
            target: "#{Dir.home}/.local/share/applications/code-url-handler.desktop"
   artifact "VSCode-linux-#{arch}/resources/app/resources/linux/code.png",
            target: "#{Dir.home}/.local/share/icons/vscode.png"
 
-  preflight do
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    File.write("#{staged_path}/VSCode-linux-#{arch}/code.desktop", <<~EOS)
+  preflight_steps do
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons", base: :home
+
+    write_file("code.desktop", <<~EOS)
       [Desktop Entry]
       Name=Visual Studio Code
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/code %F
-      Icon=#{Dir.home}/.local/share/icons/vscode.png
+      Exec={{HOMEBREW_PREFIX}}/bin/code %F
+      Icon=vscode
       Type=Application
       StartupNotify=false
       StartupWMClass=Code
@@ -53,16 +55,16 @@ cask "visual-studio-code-linux" do
 
       [Desktop Action new-empty-window]
       Name=New Empty Window
-      Exec=#{HOMEBREW_PREFIX}/bin/code --new-window %F
-      Icon=#{Dir.home}/.local/share/icons/vscode.png
+      Exec={{HOMEBREW_PREFIX}}/bin/code --new-window %F
+      Icon=vscode
     EOS
-    File.write("#{staged_path}/VSCode-linux-#{arch}/code-url-handler.desktop", <<~EOS)
+    write_file("code-url-handler.desktop", <<~EOS)
       [Desktop Entry]
       Name=Visual Studio Code - URL Handler
       Comment=Code Editing. Redefined.
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/code --open-url %U
-      Icon=#{Dir.home}/.local/share/icons/vscode.png
+      Exec={{HOMEBREW_PREFIX}}/bin/code --open-url %U
+      Icon=vscode
       Type=Application
       NoDisplay=true
       StartupNotify=true

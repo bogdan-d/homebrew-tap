@@ -24,15 +24,17 @@ cask "zed-linux" do
   artifact "zed.desktop",
            target: "#{Dir.home}/.local/share/applications/dev.zed.Zed.desktop"
 
-  preflight do
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    File.write("#{staged_path}/zed.desktop", <<~EOS)
+  preflight_steps do
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons", base: :home
+
+    write_file("zed.desktop", <<~EOS)
       [Desktop Entry]
       Name=Zed
       Comment=High-performance, multiplayer code editor
       GenericName=Text Editor
-      Exec=#{HOMEBREW_PREFIX}/bin/zed %F
-      Icon=#{Dir.home}/.local/share/icons/zed.png
+      Exec={{HOMEBREW_PREFIX}}/bin/zed %F
+      Icon=zed
       Type=Application
       StartupNotify=true
       StartupWMClass=dev.zed.Zed

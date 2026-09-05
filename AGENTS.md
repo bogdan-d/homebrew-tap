@@ -11,7 +11,7 @@ Repository layout
 Key patterns to follow
 - Follow the Homebrew cask DSL: `cask "name" do ... end`. Include `version`, `sha256`, `url`, `desc`, `homepage` where applicable.
 - Multi-arch support: use `arch arm: "arm64", intel: "x64"` and `on_arm`/`on_intel` conditionals where needed.
-- Desktop assets: use `artifact` for `.desktop` files and icons; apply `preflight` for any Exec or icon path rewrites.
+- Desktop assets: use `artifact` for `.desktop` files and icons; apply declarative `preflight_steps` for any Exec or icon path rewrites. Use `postflight_steps`, `uninstall_preflight_steps`, and `uninstall_postflight_steps` for work in those lifecycle phases.
 - Wallpapers and DE-specific artifacts: handle GNOME, KDE, and other DEs by adapting metadata and XML preprocessing as necessary.
 
 Validation and CI

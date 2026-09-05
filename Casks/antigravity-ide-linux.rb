@@ -26,6 +26,7 @@ cask "antigravity-ide-linux" do
   end
 
   depends_on :linux
+  depends_on formula: "python@3.14"
 
   binary "#{staged_path}/Antigravity IDE/bin/antigravity-ide"
   binary "#{staged_path}/Antigravity IDE/bin/antigravity-ide", target: "agy-ide"
@@ -38,26 +39,17 @@ cask "antigravity-ide-linux" do
   artifact "Antigravity IDE/resources/app/resources/linux/code.png",
            target: "#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity-ide.png"
 
-  preflight do
-    product_json = "#{staged_path}/Antigravity IDE/resources/app/product.json"
-    if File.exist?(product_json)
-      product = JSON.parse(File.read(product_json))
-      product.delete("updateUrl")
-      product["configurationDefaults"] ||= {}
-      product["configurationDefaults"]["update.mode"] = "none"
-      File.write(product_json, JSON.pretty_generate(product))
-    end
+  preflight_steps do
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons/hicolor/512x512/apps", base: :home
 
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons/hicolor/512x512/apps"
-
-    File.write("#{staged_path}/antigravity-ide.desktop", <<~EOS)
+    write_file("antigravity-ide.desktop", <<~EOS)
       [Desktop Entry]
       Name=Antigravity IDE
       Comment=AI Coding Agent IDE
       GenericName=Text Editor
-      Exec="#{HOMEBREW_PREFIX}/bin/antigravity-ide" %F
-      Icon=#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity-ide.png
+      Exec="{{HOMEBREW_PREFIX}}/bin/antigravity-ide" %F
+      Icon=antigravity-ide
       Type=Application
       StartupNotify=false
       StartupWMClass=Antigravity IDE
@@ -68,17 +60,17 @@ cask "antigravity-ide-linux" do
 
       [Desktop Action new-empty-window]
       Name=New Empty Window
-      Exec="#{HOMEBREW_PREFIX}/bin/antigravity-ide" --new-window %F
-      Icon=#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity-ide.png
+      Exec="{{HOMEBREW_PREFIX}}/bin/antigravity-ide" --new-window %F
+      Icon=antigravity-ide
     EOS
 
-    File.write("#{staged_path}/antigravity-ide-url-handler.desktop", <<~EOS)
+    write_file("antigravity-ide-url-handler.desktop", <<~EOS)
       [Desktop Entry]
       Name=Antigravity IDE - URL Handler
       Comment=AI Coding Agent IDE
       GenericName=Text Editor
-      Exec="#{HOMEBREW_PREFIX}/bin/antigravity-ide" --open-url "%U"
-      Icon=#{Dir.home}/.local/share/icons/hicolor/512x512/apps/antigravity-ide.png
+      Exec="{{HOMEBREW_PREFIX}}/bin/antigravity-ide" --open-url "%U"
+      Icon=antigravity-ide
       Type=Application
       NoDisplay=true
       Terminal=false
@@ -88,6 +80,23 @@ cask "antigravity-ide-linux" do
       MimeType=x-scheme-handler/antigravity-ide;
       Keywords=antigravity;code;editor;ai;
     EOS
+
+    run "{{HOMEBREW_PREFIX}}/opt/python@3.14/bin/python3.14", args: ["-c", <<~PYTHON, "{{staged_path}}"]
+      import json
+      import sys
+      from pathlib import Path
+
+      staged_path = Path(sys.argv[1])
+      product_path = staged_path / "Antigravity IDE/resources/app/product.json"
+
+      if product_path.exists():
+          product = json.loads(product_path.read_text())
+          product.pop("updateUrl", None)
+          if product.get("configurationDefaults") is None or product["configurationDefaults"] is False:
+              product["configurationDefaults"] = {}
+          product["configurationDefaults"]["update.mode"] = "none"
+          product_path.write_text(json.dumps(product, indent=2))
+    PYTHON
   end
 
   zap trash: [

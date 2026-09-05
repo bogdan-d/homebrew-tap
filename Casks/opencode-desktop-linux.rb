@@ -34,16 +34,14 @@ cask "opencode-desktop-linux" do
   artifact "usr/share/applications/OpenCode.desktop",
            target: "#{Dir.home}/.local/share/applications/OpenCode.desktop"
 
-  preflight do
-    rpm2cpio = Formula["rpm2cpio"].bin/"rpm2cpio"
-    cpio = Formula["cpio"].bin/"cpio"
-    system "sh", "-c", "'#{rpm2cpio}' '#{staged_path}/opencode-desktop-linux-x86_64.rpm' | '#{cpio}' -idm --quiet",
-           chdir: staged_path
-
-    desktop_file = "#{staged_path}/usr/share/applications/OpenCode.desktop"
-    content = File.read(desktop_file)
-    content.gsub!(/^Exec=.*/, "Exec=#{HOMEBREW_PREFIX}/bin/opencode-desktop %U")
-    File.write(desktop_file, content)
+  preflight_steps do
+    run "{{HOMEBREW_PREFIX}}/opt/rpm2cpio/bin/rpm2cpio",
+        args: ["{{staged_path}}/opencode-desktop-linux-x86_64.rpm"], stdout_path: "opencode-desktop.cpio"
+    run "{{HOMEBREW_PREFIX}}/opt/cpio/bin/cpio",
+        args: ["-idm", "--quiet"], stdin_path: "opencode-desktop.cpio", chdir: "{{staged_path}}"
+    remove "opencode-desktop.cpio"
+    inreplace "usr/share/applications/OpenCode.desktop", /^Exec=.*/,
+              "Exec={{HOMEBREW_PREFIX}}/bin/opencode-desktop %U"
   end
 
   zap trash: [

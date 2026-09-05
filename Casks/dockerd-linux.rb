@@ -33,37 +33,27 @@ cask "dockerd-linux" do
   binary "docker-rootless-extras/rootlesskit"
   binary "docker-rootless-extras/vpnkit"
 
-  preflight do
-    extras_url = "https://download.docker.com/linux/static/stable/x86_64/docker-rootless-extras-#{version}.tgz"
-
-    ohai "Downloading docker-rootless-extras..."
-    system_command "curl", args: ["-L", extras_url, "-o", "#{staged_path}/extras.tgz"]
-
-    ohai "Extracting extras..."
-    system_command "tar", args: ["-xzf", "#{staged_path}/extras.tgz", "-C", staged_path]
-
-    File.delete("#{staged_path}/extras.tgz")
+  preflight_steps do
+    run "curl",
+        args:           ["-L", "https://download.docker.com/linux/static/stable/x86_64/docker-rootless-extras-{{version}}.tgz",
+                         "-o", "{{staged_path}}/extras.tgz"],
+        network_access: true
+    run "tar", args: ["-xzf", "{{staged_path}}/extras.tgz", "-C", "{{staged_path}}"]
+    remove "extras.tgz"
   end
 
-  postflight do
-    require "fileutils"
+  postflight_steps do
+    mkdir_p ".config/systemd/user", base: :home
 
-    systemd_dir = File.expand_path("~/.config/systemd/user")
-    service_file = File.join(systemd_dir, "dockerd-rootless.service")
-
-    ohai "Creating systemd user service..."
-    FileUtils.mkdir_p(systemd_dir)
-
-    # Normal brew service don't want to work with Casks
-    service_content = <<~SERVICE
+    write_file ".config/systemd/user/dockerd-rootless.service", <<~SERVICE, base: :home
       [Unit]
       Description=Docker Application Container Engine (Rootless)
       Documentation=https://docs.docker.com/go/rootless/
 
       [Service]
-      Environment=PATH=#{HOMEBREW_PREFIX}/bin:#{HOMEBREW_PREFIX}/sbin:/usr/bin:/usr/sbin:/bin
+      Environment=PATH={{HOMEBREW_PREFIX}}/bin:{{HOMEBREW_PREFIX}}/sbin:/usr/bin:/usr/sbin:/bin
       Environment=XDG_RUNTIME_DIR=/run/user/%U
-      ExecStart=#{HOMEBREW_PREFIX}/bin/dockerd-rootless --iptables=false
+      ExecStart={{HOMEBREW_PREFIX}}/bin/dockerd-rootless --iptables=false
       ExecReload=/bin/kill -s HUP $MAINPID
       TimeoutSec=0
       RestartSec=2
@@ -81,25 +71,8 @@ cask "dockerd-linux" do
 
       [Install]
       WantedBy=default.target
-
-      [Install]
-      WantedBy=default.target
     SERVICE
-
-    File.write(service_file, service_content)
-    FileUtils.chmod(0644, service_file)
-
-    ohai "Systemd service created at #{service_file}"
-    ohai "Run 'systemctl --user daemon-reload' to load the service"
-    ohai "Then enable and start with: systemctl --user enable --now dockerd-rootless"
-
-    ohai "Configuring docker context..."
-    docker_cli = "#{HOMEBREW_PREFIX}/bin/docker"
-    docker_socket = "unix:///run/user/#{Process.uid}/docker.sock"
-    context_create_cmd = "#{docker_cli} context create rootless --docker host=#{docker_socket}"
-    system_command "sh",
-                   args: ["-c", "#{docker_cli} context inspect rootless >/dev/null 2>&1 || #{context_create_cmd}"]
-    system_command docker_cli, args: ["context", "use", "rootless"]
+    set_permissions ".config/systemd/user/dockerd-rootless.service", "0644", base: :home, recursive: false
   end
 
   # Does not seem work...
@@ -116,8 +89,8 @@ cask "dockerd-linux" do
       systemctl --user daemon-reload
       systemctl --user enable --now dockerd-rootless
 
-    A "rootless" docker context has been created and selected.
-    To switch back to the default context:
-      docker context use default
+    A "rootless" docker context is not created automatically. To create and select it:
+      docker context create rootless --docker host=unix:///run/user/$(id -u)/docker.sock
+      docker context use rootless
   EOS
 end

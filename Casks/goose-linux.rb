@@ -36,35 +36,27 @@ cask "goose-linux" do
   artifact "Goose/resources/images/icon.png",
            target: "#{Dir.home}/.local/share/icons/Goose.png"
 
-  preflight do
-    # Extract only usr/lib from the RPM to staged_path
-    rpm_path = Dir["#{staged_path}/*.rpm"].first
-    raise "RPM not found in staged_path" if rpm_path.blank?
-
+  preflight_steps do
     # Extract usr/lib/* directly to staged_path (stripping the usr/lib prefix)
-    # Using -v for verbose output to debug extraction
-    bsdtar = "#{HOMEBREW_PREFIX}/bin/bsdtar"
-    system "sh", "-c", "#{bsdtar} -xvf '#{staged_path}/Goose-#{version}-1.x86_64.rpm' -C '#{staged_path}' --strip-components=3 usr/lib/Goose",
-           chdir: staged_path
+    run "{{HOMEBREW_PREFIX}}/opt/libarchive/bin/bsdtar",
+        args: ["-xvf", "{{staged_path}}/Goose-{{version}}-1.x86_64.rpm", "-C", "{{staged_path}}",
+               "--strip-components=3", "usr/lib/Goose"], print_stdout: true
 
     # Remove the RPM artifact after extraction
-    FileUtils.rm(rpm_path)
-    puts "Removed RPM artifact: #{File.basename(rpm_path)}\n"
+    remove "Goose-{{version}}-1.x86_64.rpm"
 
-    raise "RPM extraction failed: missing Goose/Goose binary" unless File.exist?("#{staged_path}/Goose/Goose")
-    unless File.exist?("#{staged_path}/Goose/resources/images/icon.png")
-      raise "RPM extraction failed: missing app icon"
-    end
+    run "/usr/bin/test", args: ["-f", "{{staged_path}}/Goose/Goose"]
+    run "/usr/bin/test", args: ["-f", "{{staged_path}}/Goose/resources/images/icon.png"]
 
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons"
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons", base: :home
 
-    File.write("#{staged_path}/Goose.desktop", <<~EOS)
+    write_file("Goose.desktop", <<~EOS)
       [Desktop Entry]
       Name=Goose
       Comment=Open source, extensible AI agent that goes beyond code suggestions
-      Exec=#{HOMEBREW_PREFIX}/bin/goose-desktop %U
-      Icon=#{Dir.home}/.local/share/icons/Goose.png
+      Exec={{HOMEBREW_PREFIX}}/bin/goose-desktop %U
+      Icon=Goose
       Terminal=false
       Type=Application
       Categories=Development;

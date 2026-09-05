@@ -17,32 +17,28 @@ cask "winboat" do
 
   binary "winboat-#{version}-x64/winboat"
 
-  preflight do
-    require "open-uri"
+  preflight_steps do
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons/hicolor/512x512/apps", base: :home
 
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons/hicolor/512x512/apps"
+    # Download icon from GitHub repo.
+    run "curl",
+        args:           ["-fL", "-o", "{{staged_path}}/winboat.png",
+                         "https://raw.githubusercontent.com/TibixDev/winboat/main/src/renderer/public/img/winboat_logo.png"],
+        network_access: true
+    copy "winboat.png", ".local/share/icons/hicolor/512x512/apps/winboat.png", target_base: :home
 
-    # Download icon from GitHub repo
-    icon_url = "https://raw.githubusercontent.com/TibixDev/winboat/main/src/renderer/public/img/winboat_logo.png"
-    icon_path = "#{Dir.home}/.local/share/icons/hicolor/512x512/apps/winboat.png"
-
-    URI.parse(icon_url).open do |remote_file|
-      File.binwrite(icon_path, remote_file.read)
-    end
-
-    desktop_file = <<~EOS
+    write_file ".local/share/applications/winboat.desktop", <<~EOS, base: :home
       [Desktop Entry]
       Name=Winboat
       Comment=Run Windows apps on Linux with seamless integration
-      Exec=#{HOMEBREW_PREFIX}/bin/winboat %U
+      Exec={{HOMEBREW_PREFIX}}/bin/winboat %U
       Terminal=false
       Type=Application
       Icon=winboat
       Categories=Utility;
     EOS
-
-    File.write("#{Dir.home}/.local/share/applications/winboat.desktop", desktop_file)
+    remove "winboat.png"
   end
 
   zap trash: [

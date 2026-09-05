@@ -19,41 +19,35 @@ cask "rancher-desktop-linux" do
 
   binary "squashfs-root/AppRun", target: "rancher-desktop"
 
-  preflight do
-    # Extract AppImage contents
-    appimage_path = "#{staged_path}/rancher-desktop-latest-x86_64.AppImage"
-    system "chmod", "+x", appimage_path
-    system appimage_path, "--appimage-extract", chdir: staged_path
-
-    # Remove the original AppImage to save space
-    FileUtils.rm appimage_path
+  preflight_steps do
+    set_permissions "rancher-desktop-latest-x86_64.AppImage", "a+x", recursive: false
+    run "{{staged_path}}/rancher-desktop-latest-x86_64.AppImage",
+        args: ["--appimage-extract"], chdir: "{{staged_path}}"
+    remove "rancher-desktop-latest-x86_64.AppImage"
   end
 
-  postflight do
-    # Create necessary directories
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons/hicolor/512x512/apps"
+  postflight_steps do
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons/hicolor/512x512/apps", base: :home
 
-    # Copy icon
-    icon_source = "#{staged_path}/squashfs-root/rancher-desktop.png"
-    icon_target = "#{Dir.home}/.local/share/icons/hicolor/512x512/apps/rancher-desktop.png"
-    FileUtils.cp(icon_source, icon_target) if File.exist?(icon_source)
+    if_path_exists "squashfs-root/rancher-desktop.png" do
+      copy "squashfs-root/rancher-desktop.png",
+           ".local/share/icons/hicolor/512x512/apps/rancher-desktop.png",
+           target_base: :home
+    end
 
-    # Update and copy desktop entry
-    desktop_source = "#{staged_path}/squashfs-root/rancher-desktop.desktop"
-    desktop_target = "#{Dir.home}/.local/share/applications/rancher-desktop.desktop"
-    if File.exist?(desktop_source)
-      desktop_content = File.read(desktop_source)
-      desktop_content.gsub!(/^Exec=.*/, "Exec=#{HOMEBREW_PREFIX}/bin/rancher-desktop")
-      desktop_content.gsub!(/^Icon=.*/, "Icon=#{icon_target}")
-      File.write(desktop_target, desktop_content)
+    if_path_exists "squashfs-root/rancher-desktop.desktop" do
+      inreplace "squashfs-root/rancher-desktop.desktop", /^Exec=.*/,
+                "Exec={{HOMEBREW_PREFIX}}/bin/rancher-desktop"
+      inreplace "squashfs-root/rancher-desktop.desktop", /^Icon=.*/, "Icon=rancher-desktop"
+      copy "squashfs-root/rancher-desktop.desktop", ".local/share/applications/rancher-desktop.desktop",
+           target_base: :home
     end
   end
 
-  uninstall_postflight do
-    # Clean up icon and desktop files
-    FileUtils.rm("#{Dir.home}/.local/share/icons/hicolor/512x512/apps/rancher-desktop.png")
-    FileUtils.rm("#{Dir.home}/.local/share/applications/rancher-desktop.desktop")
+  uninstall_postflight_steps do
+    remove [".local/share/icons/hicolor/512x512/apps/rancher-desktop.png",
+            ".local/share/applications/rancher-desktop.desktop"], base: :home
   end
 
   zap trash: [

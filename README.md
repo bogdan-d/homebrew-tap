@@ -21,9 +21,9 @@ What's included
 - OEM or hardware tools: Framework System Tool
 
 Working with this repo
-- Casks are located in `Casks/` - each cask is a single Ruby DSL file. Follow conventions already used in this repo: `version`, `sha256`, `url`, `artifact`, and `preflight` blocks.
+- Casks are located in `Casks/` - each cask is a single Ruby DSL file. Follow conventions already used in this repo: `version`, `sha256`, `url`, `artifact`, and declarative lifecycle steps: `preflight_steps`, `postflight_steps`, `uninstall_preflight_steps`, and `uninstall_postflight_steps`.
 - Use `arch` (and `os linux: "linux"` where appropriate) for multi-arch builds; avoid `on_arm`/`on_intel` inside `livecheck` (unsupported there).
-- For painting desktop files/icons or replacing Exec paths, prefer `artifact` and `preflight` transformations.
+- For painting desktop files/icons or replacing Exec paths, prefer `artifact` and `preflight_steps` transformations.
 
 Checks & automation
 - Run the repository finisher before opening a PR:
