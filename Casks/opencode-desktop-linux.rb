@@ -1,8 +1,8 @@
 cask "opencode-desktop-linux" do
   os linux: "linux"
 
-  version "1.18.30"
-  sha256 "59ac88262840bf2ae98826ec9126e91ba02c28389bde54d20998a4f5064d7aa2"
+  version "1.18.31"
+  sha256 "89bc7028ac0f9e8c62e9ddf6566bbe4f6cbb9648c5438fbb8e550646406e1c4f"
 
   url "https://github.com/anomalyco/opencode/releases/download/v#{version}/opencode-desktop-linux-x86_64.rpm"
   name "OpenCode"
@@ -16,12 +16,12 @@ cask "opencode-desktop-linux" do
     end
   end
 
-  depends_on :linux
   depends_on arch: :x86_64
-  depends_on formula: "gtk+3"
-  depends_on formula: "webkitgtk"
-  depends_on formula: "rpm2cpio"
   depends_on formula: "cpio"
+  depends_on formula: "gtk+3"
+  depends_on formula: "rpm2cpio"
+  depends_on formula: "webkitgtk"
+  depends_on :linux
 
   binary "usr/bin/OpenCode", target: "opencode-desktop"
   binary "usr/bin/opencode-cli", target: "opencode-cli"
