@@ -24,8 +24,8 @@ cask "fw-fanctrl-linux" do
     end
   end
 
-  depends_on :linux
   depends_on arch: :x86_64
+  depends_on :linux
 
   binary "#{release_root}/usr/bin/fw-fanctrl"
   binary "#{release_root}/usr/bin/ectool"

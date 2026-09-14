@@ -14,15 +14,15 @@ cask "dockerd-linux" do
     regex(/href=.*?docker[._-]v?(\d+(?:\.\d+)+)\.tgz/i)
   end
 
-  depends_on :linux
   depends_on arch: :x86_64
-  depends_on formula: "slirp4netns"
+  depends_on formula: "containerd"
+  depends_on formula: "docker"
   depends_on formula: "fuse-overlayfs"
   depends_on formula: "iproute2"
   depends_on formula: "iptables"
-  depends_on formula: "docker"
-  depends_on formula: "containerd"
   depends_on formula: "runc"
+  depends_on formula: "slirp4netns"
+  depends_on :linux
 
   # Binaries from the main tgz
   binary "docker/dockerd"

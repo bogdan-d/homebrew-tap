@@ -15,8 +15,8 @@ cask "buildbox" do
     regex(/href=.*?buildbox[._-]v?(\d+(?:\.\d+)+)\.tgz/i)
   end
 
-  depends_on :linux
   depends_on arch: :x86_64
+  depends_on :linux
 
   # Binaries from the tgz
   binary "buildbox-casd"

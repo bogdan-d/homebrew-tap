@@ -25,8 +25,8 @@ cask "antigravity-linux" do
     end
   end
 
-  depends_on :linux
   depends_on formula: "python@3.14"
+  depends_on :linux
 
   binary "#{staged_path}/Antigravity-#{arch}/antigravity"
   artifact "antigravity.desktop",

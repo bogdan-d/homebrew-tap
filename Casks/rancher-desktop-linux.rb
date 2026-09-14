@@ -13,9 +13,9 @@ cask "rancher-desktop-linux" do
     skip "Uses version :latest"
   end
 
-  depends_on :linux
   depends_on arch: :x86_64
   depends_on formula: "squashfs"
+  depends_on :linux
 
   binary "squashfs-root/AppRun", target: "rancher-desktop"
 

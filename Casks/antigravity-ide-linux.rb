@@ -25,8 +25,8 @@ cask "antigravity-ide-linux" do
     end
   end
 
-  depends_on :linux
   depends_on formula: "python@3.14"
+  depends_on :linux
 
   binary "#{staged_path}/Antigravity IDE/bin/antigravity-ide"
   binary "#{staged_path}/Antigravity IDE/bin/antigravity-ide", target: "agy-ide"

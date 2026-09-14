@@ -20,9 +20,9 @@ cask "lm-studio-linux" do
     end
   end
 
-  depends_on :linux
   depends_on arch: :x86_64
   depends_on formula: "squashfs"
+  depends_on :linux
 
   binary "squashfs-root/AppRun", target: "lm-studio"
   artifact "squashfs-root/usr/share/icons/hicolor/512x512/apps/lm-studio.png",
