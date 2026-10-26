@@ -80,6 +80,7 @@ cleanup_owned_tap() {
     echo "Cleanup stopped: could not safely untap ${TAP_NAME}." >&2
     return 1
   fi
+  brew untrust --tap "${TAP_NAME}" >/dev/null 2>&1 || true
 }
 
 AUTO_CLEANUP=false
@@ -189,6 +190,7 @@ then
   brew untap "${TAP_NAME}" >/dev/null 2>&1 || true
   fail "Could not locate scratch tap '${TAP_NAME}'."
 fi
+brew trust --tap "${TAP_NAME}" >/dev/null
 mkdir -p "${TAP_PATH}/Casks"
 printf '%s\n' "${CASK_NAME}" >"${TAP_PATH}/${TAP_MARKER}"
 cp "${CASK_FILE}" "${TAP_PATH}/Casks/"

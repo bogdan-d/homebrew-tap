@@ -73,7 +73,7 @@ case "$1" in
     [[ "$2" == "--cask" ]]
     [[ -f "$FAKE_BREW_ROOT/installed/$3" ]]
     ;;
-  style|livecheck|bump)
+  style|livecheck|bump|trust|untrust)
     ;;
   audit)
     token="${@: -1}"
@@ -117,8 +117,10 @@ setup_case audit
 touch "${FAKE_BREW_ROOT}/installed/unrelated"
 run_helper audit example
 assert_log '^tap-new[[:space:]]+--no-git[[:space:]]+bogdan-d/local-test-'
+assert_log '^trust[[:space:]]+--tap[[:space:]]+bogdan-d/local-test-'
 assert_log '^audit[[:space:]]+--cask[[:space:]]+bogdan-d/local-test-.*/example$'
 assert_log '^untap[[:space:]]+bogdan-d/local-test-'
+assert_log '^untrust[[:space:]]+--tap[[:space:]]+bogdan-d/local-test-'
 assert_no_log '^uninstall'
 assert_no_log '(^|[[:space:]])--force([[:space:]]|$)'
 [[ -f "${FAKE_BREW_ROOT}/installed/unrelated" ]] || fail "audit cleanup removed an unrelated cask"
