@@ -15,7 +15,17 @@ cask "vscodium-linux" do
 
   livecheck do
     url :url
-    strategy :github_latest
+    regex(/^VSCodium-linux-#{arch}-v?(\d+(?:\.\d+)+)\.tar\.gz$/i)
+    # Releases are published before their Linux assets are uploaded.
+    strategy :github_releases do |json, regex|
+      json.map do |release|
+        next if release["draft"] || release["prerelease"]
+
+        release["assets"]&.map do |asset|
+          asset["name"]&.[](regex, 1)
+        end
+      end.flatten
+    end
   end
 
   depends_on :linux
