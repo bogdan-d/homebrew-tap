@@ -15,16 +15,18 @@ cask "vscodium-linux" do
 
   livecheck do
     url :url
-    regex(/^VSCodium-linux-#{arch}-v?(\d+(?:\.\d+)+)\.tar\.gz$/i)
-    # Releases are published before their Linux assets are uploaded.
+    regex(/^VSCodium-linux-(arm64|x64)-v?(\d+(?:\.\d+)+)\.tar\.gz$/i)
+    # Releases are published before their Linux assets are uploaded, one arch at a time.
+    # Only accept a version once both arches exist, so arm and intel never diverge.
     strategy :github_releases do |json, regex|
-      json.map do |release|
+      json.filter_map do |release|
         next if release["draft"] || release["prerelease"]
 
-        release["assets"]&.map do |asset|
-          asset["name"]&.[](regex, 1)
-        end
-      end.flatten
+        matches = Array(release["assets"]).filter_map { |asset| asset["name"]&.match(regex) }
+        next if matches.map { |match| match[1] }.uniq.sort != ["arm64", "x64"]
+
+        matches.first[2]
+      end
     end
   end
 
