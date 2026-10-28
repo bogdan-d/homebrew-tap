@@ -9,12 +9,22 @@ jobs:
   bump:
     runs-on: ubuntu-26.04
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
 
     steps:
+      # PRs opened with GITHUB_TOKEN need manual approval before their checks run.
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.BUMP_APP_CLIENT_ID }}
+          private-key: ${{ secrets.BUMP_APP_PRIVATE_KEY }}
+
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@6eaeff80e7e5c43087c0e5eb5aa82120399e9c91 # main
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          brew-gh-api-token: ${{ steps.app-token.outputs.token }}
 
       - name: Configure git
         uses: Homebrew/actions/git-user-config@6eaeff80e7e5c43087c0e5eb5aa82120399e9c91 # main
@@ -46,9 +56,9 @@ jobs:
 
       - name: Bump packages
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           HOMEBREW_DEVELOPER: 1
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           log_file="$(mktemp)"
           set +e
@@ -105,10 +115,11 @@ jobs:
       - name: Enable auto-merge on created PRs
         if: always()
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
           # Include older open bump PRs so transient merge failures are retried.
-          for pr_number in $(gh pr list --author "app/github-actions" --search "Created by \`brew bump\`" --json number --jq '.[].number'); do
+          for pr_number in $(gh pr list --author "app/$APP_SLUG" --search "Created by \`brew bump\`" --json number --jq '.[].number'); do
             merged=false
             for attempt in 1 2 3; do
               if gh pr merge "$pr_number" --auto --merge --delete-branch --subject "Auto-merge PR #$pr_number"; then
