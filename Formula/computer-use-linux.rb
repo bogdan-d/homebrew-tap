@@ -31,8 +31,9 @@ class ComputerUseLinux < Formula
       Host pieces for KDE Plasma on Wayland come from the distribution, not Homebrew
       (AT-SPI bus, RemoteDesktop/Screenshot portals, Klipper for typing text):
         sudo pacman -S --needed at-spi2-core xdg-desktop-portal-kde plasma-workspace
-      /dev/uinput must be readable and writable by your user. If it is not:
-        sudo usermod -aG input $USER    # then log out and back in
+      /dev/uinput must be readable and writable by your user. If it is not, grant only
+      your user access rather than joining the broad "input" group:
+        sudo setfacl -m u:$USER:rw /dev/uinput    # lasts until reboot
 
       Enable AT-SPI accessibility, then restart the apps you want to drive:
         computer-use-linux setup
