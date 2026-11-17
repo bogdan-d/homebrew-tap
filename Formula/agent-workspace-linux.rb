@@ -20,6 +20,7 @@ class AgentWorkspaceLinux < Formula
   depends_on "libxkbcommon"
   depends_on :linux
   depends_on "wayland"
+  # The KWin backend refuses to start without wl-copy and wl-paste.
   depends_on "wl-clipboard"
 
   def fetch
