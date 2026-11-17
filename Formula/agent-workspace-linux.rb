@@ -11,6 +11,12 @@ class AgentWorkspaceLinux < Formula
     strategy :github_latest
   end
 
+  bottle do
+    root_url "https://github.com/bogdan-d/homebrew-tap/releases/download/agent-workspace-linux-0.6.4"
+    rebuild 1
+    sha256 cellar: :any, x86_64_linux: "fafbf837bbdc465b6071ffce1a2398bd45c2e9ebc4d06b2b4d84975e0cdc9b3d"
+  end
+
   depends_on "pkgconf" => :build
   depends_on "rust" => :build
   # The font crates probe fontconfig and freetype through pkg-config at build time.
