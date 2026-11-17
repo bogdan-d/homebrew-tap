@@ -12,6 +12,11 @@ class Ydotool < Formula
     strategy :github_latest
   end
 
+  bottle do
+    root_url "https://github.com/bogdan-d/homebrew-tap/releases/download/ydotool-1.0.4.20251222"
+    sha256 cellar: :any, x86_64_linux: "0267ca93011252cb6b8e5081f6e92828278ea135d848917c51a7ca174e6239ec"
+  end
+
   depends_on "cmake" => :build
   depends_on "pkgconf" => :build
   depends_on "scdoc" => :build
