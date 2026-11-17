@@ -1,0 +1,49 @@
+name: Bottle formula bumps
+
+# A formula bump must go through `brew pr-pull`, not a plain merge, or its bottle is never published and every install compiles from source.
+# Once a bump PR's tests pass, this adds the `pr-pull` label, which starts the publish workflow.
+on:
+  workflow_run:
+    workflows: ["brew test-bot"]
+    types:
+      - completed
+
+jobs:
+  label:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+
+    steps:
+      # A label added with GITHUB_TOKEN does not start other workflows.
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.BUMP_APP_CLIENT_ID }}
+          private-key: ${{ secrets.BUMP_APP_PRIVATE_KEY }}
+
+      - name: Label the bump PR when it changes a formula
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_REPO: ${{ github.repository }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # Only PRs the bump app opened, and only at the commit that was tested.
+          pr_number="$(gh pr list --head "$HEAD_BRANCH" --author "app/$APP_SLUG" --state open \
+            --json number,headRefOid --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number")"
+          if [[ -z "$pr_number" ]]; then
+            echo "No open bump PR for $HEAD_BRANCH at $HEAD_SHA."
+            exit 0
+          fi
+
+          if ! gh pr view "$pr_number" --json files --jq '.files[].path' | grep -q '^Formula/'; then
+            echo "PR #$pr_number changes no formula; auto-merge handles it."
+            exit 0
+          fi
+
+          gh api "repos/$GH_REPO/issues/$pr_number/labels" -f "labels[]=pr-pull" >/dev/null
+          echo "Labelled PR #$pr_number with pr-pull."

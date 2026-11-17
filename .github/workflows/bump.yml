@@ -119,6 +119,12 @@ jobs:
         run: |
           # Include older open bump PRs so transient merge failures are retried.
           for pr_number in $(gh pr list --author "app/$APP_SLUG" --search "Created by \`brew bump\`" --json number --jq '.[].number'); do
+            # Formula bumps are merged by `brew pr-pull` so their bottles get published; see bottle-bumps.yml.
+            if gh pr view "$pr_number" --json files --jq '.files[].path' | grep -q '^Formula/'; then
+              echo "PR #$pr_number changes a formula; leaving it for pr-pull."
+              continue
+            fi
+
             merged=false
             for attempt in 1 2 3; do
               if gh pr merge "$pr_number" --auto --merge --delete-branch --subject "Auto-merge PR #$pr_number"; then
