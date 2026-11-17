@@ -1,8 +1,9 @@
 class Ydotool < Formula
   desc "Generic command-line automation tool (no X!)"
   homepage "https://github.com/ReimuNotMoe/ydotool"
-  url "https://github.com/ReimuNotMoe/ydotool/archive/refs/tags/v1.0.4.tar.gz"
-  sha256 "ba075a43aa6ead51940e892ecffa4d0b8b40c241e4e2bc4bd9bd26b61fde23bd"
+  url "https://github.com/ReimuNotMoe/ydotool/archive/708e96ff27e381a8c549418a9d34cdde12305317.tar.gz"
+  version "1.0.4.20251222"
+  sha256 "0ddbb2694fbb25657a8b0fdb7db783f6ba0f166b10959d6496de9faef93679cf"
   license "AGPL-3.0-only"
   head "https://github.com/ReimuNotMoe/ydotool.git", branch: "master"
 
@@ -11,23 +12,12 @@ class Ydotool < Formula
     strategy :github_latest
   end
 
-  bottle do
-    root_url "https://github.com/ublue-os/homebrew-experimental-tap/releases/download/ydotool-1.0.4"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_linux:  "54d8b328d9669a6bc40eab8c9436d26be13cbe5284760929f082a21e75e78548"
-    sha256 cellar: :any_skip_relocation, x86_64_linux: "ed0756fdc61c5ae260ee8fe9f81757717c38ae2b73807fba8ab16db23f4e7577"
-  end
-
   depends_on "cmake" => :build
   depends_on "pkgconf" => :build
   depends_on "scdoc" => :build
   depends_on :linux
 
   def install
-    # Patch CMakeLists.txt to update minimum required version
-    inreplace "CMakeLists.txt", /cmake_minimum_required\(VERSION [^)]+\)/,
-              "cmake_minimum_required(VERSION 3.5)"
-
     system "cmake", "-S", ".", "-B", "build",
            "-DSYSTEMD_USER_SERVICE=OFF",
            *std_cmake_args
