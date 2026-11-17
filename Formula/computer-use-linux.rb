@@ -11,6 +11,12 @@ class ComputerUseLinux < Formula
     strategy :github_latest
   end
 
+  bottle do
+    root_url "https://github.com/bogdan-d/homebrew-tap/releases/download/computer-use-linux-0.7.56"
+    rebuild 1
+    sha256 cellar: :any, x86_64_linux: "b747b1d5808569052e70b4e389d7905831a5d3cbdfd80728dd6b2cb9efd85b26"
+  end
+
   depends_on "rust" => :build
   depends_on :linux
   depends_on "ydotool"
