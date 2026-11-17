@@ -1,10 +1,10 @@
 cask "t3-code-linux" do
   os linux: "linux"
 
-  version "0.1.9"
-  sha256 "d0ab56df3e338f242848435621297fd963a33715b0d8208dbf08399659572d81"
+  version "0.1.10"
+  sha256 "7cded13c10757153901edddac9a2608b156f17445de506ef9ffdf73c01528d79"
 
-  url "https://github.com/pingdotgg/t3code/releases/download/v#{version}/T3-Code-#{version}-x86_64.AppImage"
+  url "https://github.com/pingdotgg/t3code/releases/download/v#{version}/T3-Code-x86_64.AppImage"
   name "T3 Code"
   desc "Desktop GUI for coding agents"
   homepage "https://t3.codes/"
@@ -25,10 +25,10 @@ cask "t3-code-linux" do
            target: "#{Dir.home}/.local/share/applications/t3code.desktop"
 
   preflight_steps do
-    set_permissions "T3-Code-{{version}}-x86_64.AppImage", "a+x", recursive: false
-    run "{{staged_path}}/T3-Code-{{version}}-x86_64.AppImage",
+    set_permissions "T3-Code-x86_64.AppImage", "a+x", recursive: false
+    run "{{staged_path}}/T3-Code-x86_64.AppImage",
         args: ["--appimage-extract"], chdir: "{{staged_path}}"
-    remove "T3-Code-{{version}}-x86_64.AppImage"
+    remove "T3-Code-x86_64.AppImage"
     mkdir_p ".local/share/applications", base: :home
     mkdir_p ".local/share/icons", base: :home
     inreplace "squashfs-root/t3code.desktop", /^Exec=.*/,
