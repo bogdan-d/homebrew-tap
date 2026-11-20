@@ -1,8 +1,8 @@
 cask "t3-code-linux" do
   os linux: "linux"
 
-  version "0.1.10"
-  sha256 "7cded13c10757153901edddac9a2608b156f17445de506ef9ffdf73c01528d79"
+  version "0.1.11"
+  sha256 "8baa06a7bbaa3f729d69466fb211ed7006d6a6e4d800b9ecdacd831fd1686b14"
 
   url "https://github.com/pingdotgg/t3code/releases/download/v#{version}/T3-Code-x86_64.AppImage"
   name "T3 Code"
