@@ -1,8 +1,8 @@
 class ComputerUseLinux < Formula
   desc "MCP server and CLI that lets AI agents observe and control the Linux desktop"
   homepage "https://github.com/agent-sh/computer-use-linux"
-  url "https://github.com/agent-sh/computer-use-linux/archive/refs/tags/v0.7.59.tar.gz"
-  sha256 "ac3ed88d5c97ff0c37f3fd91735564eab9719e5ecef73616c10c262f68faf0dd"
+  url "https://github.com/agent-sh/computer-use-linux/archive/refs/tags/v0.7.60.tar.gz"
+  sha256 "e90a580ac54ad44b01e2eea6ecfd6aa45593af3ee66f33114016eb0ec687a5e7"
   license "MIT"
   head "https://github.com/agent-sh/computer-use-linux.git", branch: "main"
 
