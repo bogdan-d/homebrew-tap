@@ -12,8 +12,8 @@ class ComputerUseLinux < Formula
   end
 
   bottle do
-    root_url "https://github.com/bogdan-d/homebrew-tap/releases/download/computer-use-linux-0.7.60"
-    sha256 cellar: :any, x86_64_linux: "27733ecdfc88dd083ecf5a9eecaea9e933ffb322f8c3daa8174c92892fb32c25"
+    root_url "https://github.com/bogdan-d/homebrew-tap/releases/download/computer-use-linux-0.7.62"
+    sha256 cellar: :any, x86_64_linux: "412bfe5dc11bef1a7bace52fc1b24c45b67973cdb9086dd90e14b6be368264a7"
   end
 
   depends_on "rust" => :build
