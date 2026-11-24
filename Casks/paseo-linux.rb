@@ -1,8 +1,8 @@
 cask "paseo-linux" do
   os linux: "linux"
 
-  version "0.17.3"
-  sha256 "f0ff168c442290e15d2da605eaa242ddb451dfb15fc49ebf10d76b09bdd51e68"
+  version "0.17.4"
+  sha256 "20c95460019e16c3d5ed00d7e42483f82374b11934e8b0ddcb23407c79bc0521"
 
   url "https://github.com/getpaseo/paseo/releases/download/v#{version}/Paseo-#{version}-x64.tar.gz"
   name "Paseo"
